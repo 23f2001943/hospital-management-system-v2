@@ -29,12 +29,27 @@ class User(BaseModel, UserMixin):
     roles = db.relationship(
         'Role',
         secondary='user_role',
-        backref='bearers'
+        back_populates='users'
     )
-
+    doctor = db.relationship(
+    'Doctor',
+    back_populates='user',
+    uselist=False
+)
+    patient = db.relationship(
+    'Patient',
+    back_populates='user',
+    uselist=False
+)
 class Role(BaseModel, RoleMixin):
     name = db.Column(db.String(50), unique=True, nullable=False)
     description = db.Column(db.String(200))
+
+    users = db.relationship(
+        'User',
+        secondary='user_role',
+        back_populates='roles'
+    )
 
 
 class UserRole(BaseModel):
@@ -48,7 +63,7 @@ class Department(BaseModel):
     floor = db.Column(db.String(20))
     is_active = db.Column(db.Boolean, default=True)
 
-    doctors = db.relationship('Doctor', backref='department', lazy=True)
+    doctors = db.relationship('Doctor', back_populates='department', lazy=True)
 class Doctor(BaseModel):
     specialization_id = db.Column(db.Integer, db.ForeignKey('department.id'), nullable=False)
 
@@ -63,9 +78,10 @@ class Doctor(BaseModel):
     is_active = db.Column(db.Boolean, default=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user = db.relationship('User', backref='doctor')
+    user = db.relationship('User', back_populates='doctor')
 
-    appointments = db.relationship('Appointment', backref='doctor', lazy=True)
+    appointments = db.relationship('Appointment', back_populates='doctor', lazy=True)
+    department = db.relationship('Department', back_populates='doctors')
 
 
 class Patient(BaseModel):
@@ -82,9 +98,9 @@ class Patient(BaseModel):
     is_active = db.Column(db.Boolean, default=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user = db.relationship('User', backref='patient')
+    user = db.relationship('User', back_populates='patient')
 
-    appointments = db.relationship('Appointment', backref='patient', lazy=True)
+    appointments = db.relationship('Appointment', back_populates='patient', lazy=True)
 
 class Appointment(BaseModel):
     doctor_id = db.Column(db.Integer, db.ForeignKey('doctor.id'), nullable=False)
@@ -98,11 +114,17 @@ class Appointment(BaseModel):
         default='Booked'
     )
 
-    treatment = db.relationship('Treatment', backref='appointment', uselist=False)
+    treatment = db.relationship('Treatment', back_populates='appointment', uselist=False)
+    doctor = db.relationship('Doctor', back_populates='appointments')
+    patient = db.relationship('Patient', back_populates='appointments')
 
 class Treatment(BaseModel):
     appointment_id = db.Column(db.Integer, db.ForeignKey('appointment.id'), nullable=False)
     diagnosis = db.Column(db.Text)
     prescription = db.Column(db.Text)
     notes = db.Column(db.Text)
+    appointment = db.relationship(
+    'Appointment',
+    back_populates='treatment'
+)
     

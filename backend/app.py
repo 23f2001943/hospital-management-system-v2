@@ -1,7 +1,8 @@
 from flask import Flask
 from config import LocalDevelopmentConfig
-from extensions import db
-import models
+from extensions import db,security
+from models import User, Role
+from flask_security.datastore import SQLAlchemyUserDatastore
 
 def create_app():
     app = Flask(__name__)
@@ -9,6 +10,10 @@ def create_app():
 
     # initialize database
     db.init_app(app)
+    datastore=SQLAlchemyUserDatastore(db,User,Role)
+    security.init_app(app,datastore)
+
+    app.datastore=datastore
 
     # create tables
     with app.app_context():
