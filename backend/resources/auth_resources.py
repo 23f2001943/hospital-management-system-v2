@@ -1,11 +1,11 @@
 from flask_security.datastore import SQLAlchemyUserDatastore
-from flask_security.utils import hash_password
+from flask_security.utils import hash_password, verify_password
 from extensions import db
 from models import User, Role, Doctor, Patient
 from flask import current_app
 import uuid
 from flask import Blueprint, request, jsonify
-from werkzeug.security import check_password_hash as verify_password
+
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -13,6 +13,7 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
+    print("LOGIN DATA:", data)
 
     email = data.get('email')
     password = data.get('password')

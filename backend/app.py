@@ -3,7 +3,7 @@ from config import LocalDevelopmentConfig
 from extensions import db,security
 from models import User, Role
 from flask_security.datastore import SQLAlchemyUserDatastore
-from resources import auth_bp
+from resources import auth_bp, admin_bp
 
 def create_app():
     app = Flask(__name__)
@@ -17,6 +17,7 @@ def create_app():
     app.datastore=datastore
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)
 
     # create tables
     with app.app_context():

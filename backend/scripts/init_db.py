@@ -1,3 +1,5 @@
+import uuid
+
 from app import app
 from extensions import db
 from models import User, Role
@@ -24,11 +26,12 @@ with app.app_context():
     )
     if not datastore.find_user(email="admin@hospital.com"):
         admin_user = datastore.create_user(
-            email="admin@hospital.com",
-            name="Hospital Admin",
-            password=hash_password("admin123"),
-            active=True
-        )
+    email="admin@hospital.com",
+    name="Hospital Admin",
+    password=hash_password("admin123"),
+    fs_uniquifier=str(uuid.uuid4()),
+    active=True
+)
         datastore.add_role_to_user(admin_user, admin_role)
         try:
             db.session.commit()

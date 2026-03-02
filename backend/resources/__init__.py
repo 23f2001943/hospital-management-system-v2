@@ -1,1 +1,2 @@
 from resources.auth_resources import auth_bp
+from resources.admin_resources import admin_bp
