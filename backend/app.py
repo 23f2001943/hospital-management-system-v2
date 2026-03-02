@@ -4,9 +4,11 @@ from extensions import db,security
 from models import User, Role
 from flask_security.datastore import SQLAlchemyUserDatastore
 from resources import auth_bp, admin_bp
+from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
+    CORS(app, resources={r"/*": {"origins": "*"}})
     app.config.from_object(LocalDevelopmentConfig)
 
     # initialize database
