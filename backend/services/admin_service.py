@@ -15,8 +15,15 @@ class AdminService:
         password = data.get("password")
         department_id = data.get("department_id")
 
+        qualification = data.get("qualification")
+        experience_years = data.get("experience_years")
+        consultation_fee = data.get("consultation_fee")
+        contact_number = data.get("contact_number")
+        room_number = data.get("room_number")
+        availability = data.get("availability")
+
         if not name or not email or not password or not department_id:
-            return {"message": "Missing fields"}, 400
+            return {"message": "Missing required fields"}, 400
 
         if User.query.filter_by(email=email).first():
             return {"message": "Doctor already exists"}, 400
@@ -34,20 +41,23 @@ class AdminService:
         doctor_role = datastore.find_role("doctor")
         datastore.add_role_to_user(user, doctor_role)
 
-        db.session.flush()  # ensure user.id available
+        db.session.flush()
 
         doctor = Doctor(
             user_id=user.id,
-            specialization_id=department_id
+            specialization_id=department_id,
+            qualification=qualification,
+            experience_years=experience_years,
+            consultation_fee=consultation_fee,
+            contact_number=contact_number,
+            room_number=room_number,
+            availability=availability
         )
 
         db.session.add(doctor)
         db.session.commit()
 
-        return {
-            "message": "Doctor added successfully",
-            "doctor_id": user.id
-        }, 201
+        return {"message": "Doctor added successfully"}, 201
 
     @staticmethod
     def get_dashboard_stats():
@@ -68,3 +78,82 @@ class AdminService:
             "completed": completed,
             "cancelled": cancelled
         }
+    
+    @staticmethod
+    def get_doctors(name=None, specialization=None):
+
+        query = Doctor.query.join(User)
+
+        if name:
+            query = query.filter(User.name.ilike(f"%{name}%"))
+
+        if specialization:
+            query = query.filter(Doctor.specialization_id == specialization)
+
+        doctors = query.all()
+
+        result = []
+
+        for doc in doctors:
+            result.append({
+                "doctor_id": doc.id,
+                "name": doc.user.name,
+                "email": doc.user.email,
+                "department_id": doc.specialization_id,
+                "department": doc.department.name if doc.department else None,
+                "qualification": doc.qualification,
+                "experience_years": doc.experience_years,
+                "consultation_fee": float(doc.consultation_fee) if doc.consultation_fee else None,
+                "contact_number": doc.contact_number,
+                "room_number": doc.room_number,
+                "availability": doc.availability,
+                "is_active": doc.is_active
+            })
+
+        return result
+    
+    @staticmethod
+    def update_doctor(doctor_id, data):
+
+        doctor = Doctor.query.get(doctor_id)
+
+        if not doctor:
+            return {"message": "Doctor not found"}, 404
+
+        doctor.specialization_id = data.get("department_id", doctor.specialization_id)
+        doctor.qualification = data.get("qualification", doctor.qualification)
+        doctor.experience_years = data.get("experience_years", doctor.experience_years)
+        doctor.consultation_fee = data.get("consultation_fee", doctor.consultation_fee)
+        doctor.contact_number = data.get("contact_number", doctor.contact_number)
+        doctor.room_number = data.get("room_number", doctor.room_number)
+        doctor.availability = data.get("availability", doctor.availability)
+
+        db.session.commit()
+
+        return {"message": "Doctor updated successfully"}, 200
+    @staticmethod
+    def blacklist_doctor(doctor_id):
+
+        doctor = Doctor.query.get(doctor_id)
+
+        if not doctor:
+            return {"message": "Doctor not found"}, 404
+
+        doctor.is_active = False
+        db.session.commit()
+
+        return {"message": "Doctor blacklisted successfully"}, 200
+    
+    @staticmethod
+    def get_departments():
+        from models import Department
+
+        departments = Department.query.filter_by(is_active=True).all()
+
+        return [
+            {
+                "id": dept.id,
+                "name": dept.name
+            }
+            for dept in departments
+        ]

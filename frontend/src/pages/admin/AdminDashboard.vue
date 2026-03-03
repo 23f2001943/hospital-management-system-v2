@@ -1,7 +1,8 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import axios from "axios"
-
+import { useRouter } from "vue-router"
+const router = useRouter()
 const stats = ref(null)
 const error = ref(null)
 
@@ -40,8 +41,12 @@ onMounted(() => {
 
     <div v-if="stats" class="row mt-4">
 
-      <div class="col-md-4 mb-3">
-        <div class="card p-3 shadow">
+      <div
+        class="col-md-4 mb-3"
+        style="cursor: pointer"
+        @click="router.push('/admin/doctors')"
+      >
+        <div class="card p-3 shadow hover-card">
           <h5>Total Doctors</h5>
           <h3>{{ stats.total_doctors }}</h3>
         </div>
