@@ -3,7 +3,7 @@ from faker import Faker
 from datetime import date, time
 from app import app
 from extensions import db
-from models import User, Role, Doctor, Patient, Appointment
+from models import User, Role, Doctor, Patient, Appointment, Treatment
 from flask_security.datastore import SQLAlchemyUserDatastore
 from flask_security.utils import hash_password
 import uuid
@@ -70,18 +70,32 @@ with app.app_context():
     doctors = Doctor.query.all()
     patients = Patient.query.all()
 
-    # ---- CREATE APPOINTMENTS ----
+    
+        # ---- CREATE APPOINTMENTS ----
     for _ in range(100):
+
+        status = random.choice(["Booked", "Completed", "Cancelled"])
+
         appointment = Appointment(
             doctor_id=random.choice(doctors).id,
             patient_id=random.choice(patients).id,
             date=fake.date_this_year(),
             time=time(hour=random.randint(9, 17)),
-            status=random.choice(["Booked", "Completed", "Cancelled"])
+            status=status
         )
 
         db.session.add(appointment)
+        db.session.flush()   # get appointment.id
 
-    db.session.commit()
+        # create treatment only if appointment completed
+        if status == "Completed":
 
+            treatment = Treatment(
+                appointment_id=appointment.id,
+                diagnosis=fake.sentence(nb_words=4),
+                prescription=fake.sentence(nb_words=5),
+                notes=fake.sentence(nb_words=6)
+            )
+
+            db.session.add(treatment)
     print("Database seeded successfully.")

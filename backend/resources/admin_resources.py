@@ -124,3 +124,12 @@ def update_appointment(appointment_id):
     response, status = AdminService.update_appointment(appointment_id, data)
 
     return jsonify(response), status
+
+@admin_bp.route("/patient-history/<int:patient_id>", methods=["GET"])
+@auth_required("token")
+@roles_required("admin")
+def get_patient_history(patient_id):
+
+    history = AdminService.get_patient_history(patient_id)
+
+    return jsonify(history), 200

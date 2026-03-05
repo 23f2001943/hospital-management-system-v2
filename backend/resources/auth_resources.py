@@ -76,3 +76,4 @@ def register():
         "email": user.email,
         "role": "patient"
     }, 201
+

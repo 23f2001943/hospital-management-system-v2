@@ -4,8 +4,10 @@ import axios from "axios"
 
 const appointments = ref([])
 const statusFilter = ref("")
-
+const viewingHistory = ref(null)
+const patientHistory = ref([])
 const editingAppointment = ref(null)
+const appointmentCount = computed(() => appointments.value.length)
 
 const editAppointment = (appt) => {
   editingAppointment.value = { ...appt }
@@ -87,13 +89,47 @@ const updateAppointment = async () => {
   }
 
 }
+
+const viewHistory = async (appt) => {
+
+  if (viewingHistory.value === appt.appointment_id) {
+    viewingHistory.value = null
+    return
+  }
+
+  try {
+
+    const response = await axios.get(
+      `http://localhost:5000/api/admin/patient-history/${appt.patient_id}`,
+      {
+        headers: {
+          "Authentication-Token": token
+        }
+      }
+    )
+
+    patientHistory.value = response.data
+    viewingHistory.value = appt.appointment_id
+
+  } catch (error) {
+    console.error(error)
+  }
+}
 </script>
 
 <template>
 
 <div class="container mt-4">
 
+<div class="d-flex justify-content-between align-items-center mb-3">
+
 <h2>Appointment Management</h2>
+
+<span class="badge bg-primary fs-6">
+Total: {{ appointmentCount }}
+</span>
+
+</div>
 
 <!-- Filter -->
 
@@ -134,6 +170,7 @@ class="form-select"
 <th>Status</th>
 <th>Action</th>
 
+
 </tr>
 
 </thead>
@@ -149,7 +186,14 @@ class="form-select"
 <td>{{ appt.time }}</td>
 <td>{{ appt.status }}</td>
 
+
 <td>
+<button
+class="btn btn-sm btn-info me-2"
+@click="viewHistory(appt)"
+>
+View History
+</button>
 
 <button
 v-if="appt.status === 'Booked'"
@@ -166,6 +210,60 @@ class="btn btn-sm btn-danger"
 >
 Cancel
 </button>
+
+</td>
+</tr>
+<tr v-if="viewingHistory === appt.appointment_id">
+<td colspan="7">
+
+<div class="card p-3">
+
+<h6>Patient History</h6>
+
+<table class="table table-sm table-bordered">
+
+<thead>
+<tr>
+<th>Appointment ID</th>
+<th>Doctor</th>
+<th>Department</th>
+<th>Date</th>
+<th>Time</th>
+<th>Status</th>
+<th>Diagnosis</th>
+<th>Prescription</th>
+<th>Notes</th>
+</tr>
+</thead>
+
+<tbody>
+
+<tr v-for="h in patientHistory" :key="h.appointment_id">
+
+<td>{{ h.appointment_id }}</td>
+<td>{{ h.doctor_name }}</td>
+<td>{{ h.department }}</td>
+<td>{{ h.date }}</td>
+<td>{{ h.time }}</td>
+<td>{{ h.status }}</td>
+<td>{{ h.diagnosis || "-" }}</td>
+<td>{{ h.prescription || "-" }}</td>
+<td>{{ h.notes || "-" }}</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<button
+class="btn btn-secondary"
+@click="viewingHistory = null"
+>
+Close
+</button>
+
+</div>
 
 </td>
 </tr>

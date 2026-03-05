@@ -246,8 +246,9 @@ class AdminService:
 
         for appt in appointments:
 
-            result.append({
+            result.append({           
     "appointment_id": appt.id,
+    "patient_id": appt.patient_id,
     "doctor_name": appt.doctor.user.name if appt.doctor else None,
     "patient_name": appt.patient.user.name if appt.patient else None,
     "date": appt.date.strftime("%Y-%m-%d") if appt.date else None,
@@ -294,3 +295,34 @@ class AdminService:
         db.session.commit()
 
         return {"message": "Appointment updated"}, 200
+    
+    @staticmethod
+    def get_patient_history(patient_id):
+
+        appointments = (
+            Appointment.query
+            .filter_by(patient_id=patient_id)
+            .order_by(Appointment.date.desc(), Appointment.time.desc())
+            .all()
+        )
+
+        result = []
+
+        for appt in appointments:
+
+            treatment = appt.treatment
+
+            result.append({
+                "appointment_id": appt.id,
+                "doctor_name": appt.doctor.user.name if appt.doctor else None,
+                "department": appt.doctor.department.name if appt.doctor else None,
+                "date": appt.date.strftime("%Y-%m-%d") if appt.date else None,
+                "time": appt.time.strftime("%H:%M") if appt.time else None,
+                "status": appt.status,
+
+                "diagnosis": treatment.diagnosis if treatment else None,
+                "prescription": treatment.prescription if treatment else None,
+                "notes": treatment.notes if treatment else None
+            })
+
+        return result
