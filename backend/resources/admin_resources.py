@@ -55,3 +55,10 @@ def blacklist_doctor(doctor_id):
 def get_departments():
     departments = AdminService.get_departments()
     return jsonify(departments), 200
+
+@admin_bp.route("/delete-doctor/<int:doctor_id>", methods=["DELETE"])
+@auth_required("token")
+@roles_required("admin")
+def delete_doctor(doctor_id):
+    response, status = AdminService.delete_doctor(doctor_id)
+    return jsonify(response), status

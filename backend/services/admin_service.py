@@ -157,3 +157,16 @@ class AdminService:
             }
             for dept in departments
         ]
+    
+    @staticmethod
+    def delete_doctor(doctor_id):
+
+        doctor = Doctor.query.get(doctor_id)
+
+        if not doctor:
+            return {"message": "Doctor not found"}, 404
+
+        db.session.delete(doctor)
+        db.session.commit()
+
+        return {"message": "Doctor deleted permanently"}, 200

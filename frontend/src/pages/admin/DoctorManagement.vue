@@ -10,6 +10,28 @@ const activeDoctors = computed(() =>
 const blacklistedDoctors = computed(() =>
   doctors.value.filter(doc => !doc.is_active)
 )
+const deleteDoctor = async (id) => {
+  if (!confirm("Are you sure you want to permanently delete this doctor?")) {
+    return
+  }
+
+  try {
+    await axios.delete(
+      `http://127.0.0.1:5000/api/admin/delete-doctor/${id}`,
+      {
+        headers: {
+          "Authentication-Token": token
+        }
+      }
+    )
+
+    fetchDoctors()
+
+  } catch (error) {
+    console.error(error)
+    alert("Failed to delete doctor")
+  }
+}
 const search = ref("")
 const departments = ref([])
 const showAddForm = ref(false)
@@ -295,6 +317,13 @@ onMounted(() => {
             </button>
 
             <button
+            class="btn btn-sm btn-dark"
+            @click="deleteDoctor(doc.doctor_id)"
+            >
+            Delete
+            </button>
+
+            <button
             class="btn btn-sm btn-danger"
             @click="blacklistDoctor(doc.doctor_id)"
             >
@@ -337,6 +366,13 @@ onMounted(() => {
                 @click="editDoctor(doc)"
                 >
                 Edit
+                </button>
+
+                <button
+                class="btn btn-sm btn-dark ms-2"
+                @click="deleteDoctor(doc.doctor_id)"
+                >
+                Delete
                 </button>
             </td>
             </tr>
