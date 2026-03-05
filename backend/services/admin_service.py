@@ -4,7 +4,7 @@ from extensions import db
 from models import User, Role, Doctor, Patient, Appointment
 import uuid
 from sqlalchemy import or_
-
+from datetime import datetime
 class AdminService:
 
     @staticmethod
@@ -231,3 +231,66 @@ class AdminService:
         db.session.commit()
 
         return {"message": "Patient deleted permanently"}, 200
+    
+    @staticmethod
+    def get_appointments(status=None):
+
+        query = Appointment.query
+
+        if status:
+            query = query.filter(Appointment.status == status)
+
+        appointments = query.all()
+
+        result = []
+
+        for appt in appointments:
+
+            result.append({
+    "appointment_id": appt.id,
+    "doctor_name": appt.doctor.user.name if appt.doctor else None,
+    "patient_name": appt.patient.user.name if appt.patient else None,
+    "date": appt.date.strftime("%Y-%m-%d") if appt.date else None,
+    "time": appt.time.strftime("%H:%M") if appt.time else None,
+    "status": appt.status
+})
+
+        return result
+    
+    @staticmethod
+    def cancel_appointment(appointment_id):
+
+        appointment = Appointment.query.get(appointment_id)
+
+        if not appointment:
+            return {"message": "Appointment not found"}, 404
+
+        appointment.status = "Cancelled"
+
+        db.session.commit()
+
+        return {"message": "Appointment cancelled"}, 200
+    
+    @staticmethod
+    def update_appointment(appointment_id, data):
+
+        appointment = Appointment.query.get(appointment_id)
+
+        if not appointment:
+            return {"message": "Appointment not found"}, 404
+
+        if data.get("doctor_id"):
+            appointment.doctor_id = data["doctor_id"]
+
+        if data.get("patient_id"):
+            appointment.patient_id = data["patient_id"]
+
+        if data.get("date"):
+            appointment.date = datetime.strptime(data["date"], "%Y-%m-%d").date()
+
+        if data.get("time"):
+            appointment.time = datetime.strptime(data["time"], "%H:%M").time()
+
+        db.session.commit()
+
+        return {"message": "Appointment updated"}, 200

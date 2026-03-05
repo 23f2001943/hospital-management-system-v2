@@ -6,6 +6,7 @@ const patients = ref([])
 const search = ref("")
 const filterType = ref("name")
 
+
 const token = localStorage.getItem("token")
 
 /* Active / Blacklisted separation */

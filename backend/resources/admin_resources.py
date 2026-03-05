@@ -93,3 +93,34 @@ def delete_patient(patient_id):
     response, status = AdminService.delete_patient(patient_id)
 
     return jsonify(response), status
+
+@admin_bp.route("/appointments", methods=["GET"])
+@auth_required("token")
+@roles_required("admin")
+def get_appointments():
+
+    status = request.args.get("status")
+
+    appointments = AdminService.get_appointments(status)
+
+    return jsonify(appointments), 200
+
+@admin_bp.route("/cancel-appointment/<int:appointment_id>", methods=["PATCH"])
+@auth_required("token")
+@roles_required("admin")
+def cancel_appointment(appointment_id):
+
+    response, status = AdminService.cancel_appointment(appointment_id)
+
+    return jsonify(response), status
+
+@admin_bp.route("/update-appointment/<int:appointment_id>", methods=["PUT"])
+@auth_required("token")
+@roles_required("admin")
+def update_appointment(appointment_id):
+
+    data = request.get_json()
+
+    response, status = AdminService.update_appointment(appointment_id, data)
+
+    return jsonify(response), status

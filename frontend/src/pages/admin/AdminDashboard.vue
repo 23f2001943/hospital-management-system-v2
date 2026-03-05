@@ -5,6 +5,9 @@ import { useRouter } from "vue-router"
 const router = useRouter()
 const stats = ref(null)
 const error = ref(null)
+const goToAppointments = () => {
+  router.push("/admin/appointments")
+}
 
 const fetchStats = async () => {
   try {
@@ -63,8 +66,8 @@ const goToPatients = () => {
         </div>
       </div>
 
-      <div class="col-md-4 mb-3">
-        <div class="card p-3 shadow">
+      <div class="col-md-4 mb-3" style="cursor: pointer" @click="goToAppointments">
+         <div class="card p-3 shadow">
           <h5>Total Appointments</h5>
           <h3>{{ stats.total_appointments }}</h3>
         </div>
@@ -72,7 +75,7 @@ const goToPatients = () => {
 
       <div class="col-md-4 mb-3">
         <div class="card p-3 shadow">
-          <h5>Booked</h5>
+          <h5>Booked </h5>
           <h3>{{ stats.booked }}</h3>
         </div>
       </div>

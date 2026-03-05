@@ -5,7 +5,8 @@ import AdminDashboard from "../pages/admin/AdminDashboard.vue";
 import DoctorDashboard from "../pages/doctor/DoctorDashboard.vue";
 import PatientDashboard from "../pages/patient/PatientDashboard.vue";
 import DoctorManagement from "../pages/admin/DoctorManagement.vue";
-import PatientManagement from "../pages/admin/PatientManagement.vue"
+import PatientManagement from "../pages/admin/PatientManagement.vue";
+import AppointmentManagement from "../pages/admin/AppointmentManagement.vue"
 
 const routes = [
   { path: "/", redirect: "/login" },
@@ -14,7 +15,8 @@ const routes = [
   { path: "/doctor", component: DoctorDashboard },
   { path: "/patient", component: PatientDashboard },
   {path: "/admin/doctors", component: DoctorManagement },
-  { path: "/admin/patients", component: PatientManagement }
+  { path: "/admin/patients", component: PatientManagement },
+  { path: "/admin/appointments", component: AppointmentManagement }
 ];
 
 const router = createRouter({
