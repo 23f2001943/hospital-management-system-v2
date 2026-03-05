@@ -3,7 +3,7 @@ from flask_security.utils import hash_password
 from extensions import db
 from models import User, Role, Doctor, Patient, Appointment
 import uuid
-
+from sqlalchemy import or_
 
 class AdminService:
 
@@ -170,3 +170,64 @@ class AdminService:
         db.session.commit()
 
         return {"message": "Doctor deleted permanently"}, 200
+    
+
+    @staticmethod
+    def get_patients(name=None, patient_id=None, contact=None):
+
+        query = Patient.query.join(User)
+
+        # Search by name
+        if name:
+            query = query.filter(User.name.ilike(f"%{name}%"))
+
+        # Search by patient ID (exact match)
+        if patient_id:
+            query = query.filter(Patient.id == int(patient_id))
+
+        # Search by contact number
+        if contact:
+            query = query.filter(Patient.contact_number.ilike(f"%{contact}%"))
+
+        patients = query.all()
+
+        result = []
+
+        for p in patients:
+            result.append({
+                "patient_id": p.id,
+                "name": p.user.name,
+                "email": p.user.email,
+                "gender": p.gender,
+                "blood_group": p.blood_group,
+                "contact_number": p.contact_number,
+                "is_active": p.is_active
+            })
+
+        return result
+    
+    @staticmethod
+    def blacklist_patient(patient_id):
+
+        patient = Patient.query.get(patient_id)
+
+        if not patient:
+            return {"message": "Patient not found"}, 404
+
+        patient.is_active = False
+        db.session.commit()
+
+        return {"message": "Patient blacklisted"}, 200
+    
+    @staticmethod
+    def delete_patient(patient_id):
+
+        patient = Patient.query.get(patient_id)
+
+        if not patient:
+            return {"message": "Patient not found"}, 404
+
+        db.session.delete(patient)
+        db.session.commit()
+
+        return {"message": "Patient deleted permanently"}, 200

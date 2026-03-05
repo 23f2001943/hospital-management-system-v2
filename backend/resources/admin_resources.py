@@ -62,3 +62,34 @@ def get_departments():
 def delete_doctor(doctor_id):
     response, status = AdminService.delete_doctor(doctor_id)
     return jsonify(response), status
+
+@admin_bp.route("/patients", methods=["GET"])
+@auth_required("token")
+@roles_required("admin")
+def get_patients():
+
+    name = request.args.get("name")
+    patient_id = request.args.get("patient_id")
+    contact = request.args.get("contact")
+
+    patients = AdminService.get_patients(name, patient_id, contact)
+
+    return jsonify(patients), 200
+
+@admin_bp.route("/blacklist-patient/<int:patient_id>", methods=["PATCH"])
+@auth_required("token")
+@roles_required("admin")
+def blacklist_patient(patient_id):
+
+    response, status = AdminService.blacklist_patient(patient_id)
+
+    return jsonify(response), status
+
+@admin_bp.route("/delete-patient/<int:patient_id>", methods=["DELETE"])
+@auth_required("token")
+@roles_required("admin")
+def delete_patient(patient_id):
+
+    response, status = AdminService.delete_patient(patient_id)
+
+    return jsonify(response), status

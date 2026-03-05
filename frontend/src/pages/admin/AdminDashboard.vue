@@ -29,6 +29,10 @@ const fetchStats = async () => {
 onMounted(() => {
   fetchStats()
 })
+
+const goToPatients = () => {
+  router.push("/admin/patients")
+}
 </script>
 
 <template>
@@ -46,13 +50,13 @@ onMounted(() => {
         style="cursor: pointer"
         @click="router.push('/admin/doctors')"
       >
-        <div class="card p-3 shadow hover-card">
+        <div class="card p-3 shadow">
           <h5>Total Doctors</h5>
           <h3>{{ stats.total_doctors }}</h3>
         </div>
       </div>
 
-      <div class="col-md-4 mb-3">
+      <div class="col-md-4 mb-3" style="cursor: pointer" @click="goToPatients">
         <div class="card p-3 shadow">
           <h5>Total Patients</h5>
           <h3>{{ stats.total_patients }}</h3>
