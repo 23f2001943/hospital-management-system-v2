@@ -73,26 +73,7 @@ const goToPatients = () => {
         </div>
       </div>
 
-      <div class="col-md-4 mb-3">
-        <div class="card p-3 shadow">
-          <h5>Booked </h5>
-          <h3>{{ stats.booked }}</h3>
-        </div>
-      </div>
-
-      <div class="col-md-4 mb-3">
-        <div class="card p-3 shadow">
-          <h5>Completed</h5>
-          <h3>{{ stats.completed }}</h3>
-        </div>
-      </div>
-
-      <div class="col-md-4 mb-3">
-        <div class="card p-3 shadow">
-          <h5>Cancelled</h5>
-          <h3>{{ stats.cancelled }}</h3>
-        </div>
-      </div>
+      
 
     </div>
   </div>

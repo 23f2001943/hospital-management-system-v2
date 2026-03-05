@@ -66,17 +66,11 @@ class AdminService:
         total_patients = Patient.query.filter_by(is_active=True).count()
         total_appointments = Appointment.query.count()
 
-        booked = Appointment.query.filter_by(status="Booked").count()
-        completed = Appointment.query.filter_by(status="Completed").count()
-        cancelled = Appointment.query.filter_by(status="Cancelled").count()
 
         return {
             "total_doctors": total_doctors,
             "total_patients": total_patients,
-            "total_appointments": total_appointments,
-            "booked": booked,
-            "completed": completed,
-            "cancelled": cancelled
+            "total_appointments": total_appointments
         }
     
     @staticmethod
