@@ -10,6 +10,49 @@ const pastAppointments = ref([])
 
 const router = useRouter()
 
+const showAvailability = ref(false)
+const goToAvailability = () => {
+  showAvailability.value = !showAvailability.value
+}
+const availability = ref([])
+
+// generate next 7 days
+const generateDates = () => {
+  const today = new Date()
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date()
+    d.setDate(today.getDate() + i)
+
+    const formatted = d.toISOString().split("T")[0]
+
+    availability.value.push({
+      date: formatted,
+      morning: false,
+      evening: false
+    })
+  }
+}
+
+const saveAvailability = async () => {
+  try {
+    await axios.put(
+      "http://127.0.0.1:5000/api/doctor/availability",
+      { availability: availability.value },
+      {
+        headers: {
+          "Authentication-Token": localStorage.getItem("token")
+        }
+      }
+    )
+
+    alert("Availability saved!")
+     showAvailability.value = false
+
+  } catch (err) {
+    console.error(err)
+  }
+}
 // fetch dashboard data
 const fetchDashboard = async () => {
   try {
@@ -57,9 +100,6 @@ const goToPatients = () => {
   router.push("/doctor/patients")
 }
 
-const goToAvailability = () => {
-  router.push("/doctor/availability") // create later
-}
 
 // computed values
 
@@ -94,7 +134,10 @@ const uniquePatientsCount = computed(() => {
 })
 
 // lifecycle
-onMounted(fetchDashboard)
+onMounted(() => {
+  fetchDashboard()
+  generateDates()
+})
 </script>
 
 <template>
@@ -131,6 +174,40 @@ onMounted(fetchDashboard)
       <h2>Edit</h2>
     </div>
   </div>
+
+</div>
+
+<div v-if="showAvailability" class="card p-4 shadow-sm mb-4">
+
+  <h4 class="mb-3">Doctor Availability (Next 7 Days)</h4>
+
+  <div v-for="day in availability" :key="day.date"
+       class="d-flex align-items-center mb-3">
+
+    <!-- DATE -->
+    <div style="width: 150px;">
+      <b>{{ day.date }}</b>
+    </div>
+
+    <!-- MORNING SLOT -->
+    <button class="btn me-3"
+            :class="day.morning ? 'btn-success' : 'btn-outline-secondary'"
+            @click="day.morning = !day.morning">
+      08:00 - 12:00
+    </button>
+
+    <!-- EVENING SLOT -->
+    <button class="btn"
+            :class="day.evening ? 'btn-success' : 'btn-outline-secondary'"
+            @click="day.evening = !day.evening">
+      16:00 - 21:00
+    </button>
+
+  </div>
+
+  <button class="btn btn-primary mt-3" @click="saveAvailability">
+    Save Availability
+  </button>
 
 </div>
 
