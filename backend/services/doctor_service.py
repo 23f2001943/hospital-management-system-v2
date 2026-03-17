@@ -138,11 +138,8 @@ class DoctorService:
     @staticmethod
     def get_patient_history(patient_id):
 
-        doctor = DoctorService.get_doctor()
-
         appointments = Appointment.query.filter_by(
-            patient_id=patient_id,
-            doctor_id=doctor.id
+            patient_id=patient_id
         ).order_by(
             Appointment.date.desc(),
             Appointment.time.desc()
@@ -167,8 +164,9 @@ class DoctorService:
                 "prescription": treatment.prescription if treatment else None,
                 "notes": treatment.notes if treatment else None
             })
+
         return result
-    
+        
     @staticmethod
     def update_availability(data):
 

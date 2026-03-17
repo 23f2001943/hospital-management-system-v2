@@ -26,11 +26,16 @@ def get_appointments():
 @auth_required("token")
 @roles_required("doctor")
 def update_status(appointment_id):
-    data = request.get_json()
-    status = data.get("status")
 
-    response, code = DoctorService.update_appointment_status(appointment_id, status)
-    return jsonify(response), code
+    data = request.get_json()
+    status_value = data.get("status")
+
+    response, status_code = DoctorService.update_appointment_status(
+        appointment_id,
+        status_value
+    )
+
+    return jsonify(response), status_code
 
 @doctor_bp.route("/appointment/<int:appointment_id>/treatment", methods=["POST"])
 @auth_required("token")
