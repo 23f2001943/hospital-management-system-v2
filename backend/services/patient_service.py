@@ -118,3 +118,46 @@ class PatientService:
         db.session.commit()
 
         return {"message": "Appointment booked"}, 201
+    
+    @staticmethod
+    def get_appointments():
+
+        from models import Appointment
+        from datetime import date
+
+        patient = Patient.query.filter_by(user_id=current_user.id).first()
+
+        if not patient:
+            return []
+
+        appointments = Appointment.query.filter_by(
+            patient_id=patient.id
+        ).all()
+
+        result = []
+
+        for appt in appointments:
+
+            result.append({
+                "appointment_id": appt.id,
+                "doctor_name": appt.doctor.user.name,
+                "department": appt.doctor.department.name if appt.doctor.department else None,
+                "date": appt.date.strftime("%Y-%m-%d"),
+                "time": appt.time.strftime("%H:%M"),
+                "status": appt.status
+            })
+
+        return result
+    
+    @staticmethod
+    def cancel_appointment(appointment_id):
+
+        appointment = Appointment.query.get(appointment_id)
+
+        if not appointment:
+            return {"message": "Not found"}, 404
+
+        appointment.status = "Cancelled"
+        db.session.commit()
+
+        return {"message": "Cancelled"}, 200

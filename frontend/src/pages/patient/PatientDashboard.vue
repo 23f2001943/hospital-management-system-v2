@@ -13,6 +13,11 @@ const router = useRouter()
 const goToDoctors = () => {
   router.push("/patient/doctors")
 }
+
+const goToAppointments = () => {
+  router.push("/patient/appointments")
+}
+
 // ================= FETCH PROFILE =================
 const fetchProfile = async () => {
   try {
@@ -76,6 +81,14 @@ onMounted(fetchProfile)
         <div class="card p-3 shadow-sm cursor-pointer"
             @click="goToDoctors">
           <h5>Doctors</h5>
+          <h3>View</h3>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card p-3 shadow-sm cursor-pointer"
+            @click="goToAppointments">
+          <h5>Upcoming Appointments</h5>
           <h3>View</h3>
         </div>
       </div>

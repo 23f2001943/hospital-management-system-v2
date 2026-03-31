@@ -54,3 +54,18 @@ def book_appointment():
     data = request.get_json()
     response, status = PatientService.book_appointment(data)
     return jsonify(response), status
+
+@patient_bp.route("/appointments", methods=["GET"])
+@auth_required("token")
+@roles_required("patient")
+def get_appointments():
+    from services.patient_service import PatientService
+    data = PatientService.get_appointments()
+    return jsonify(data), 200
+
+@patient_bp.route("/appointment/<int:id>/cancel", methods=["PATCH"])
+@auth_required("token")
+@roles_required("patient")
+def cancel_appointment(id):
+    response, status = PatientService.cancel_appointment(id)
+    return jsonify(response), status
