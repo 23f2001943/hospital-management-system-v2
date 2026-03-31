@@ -18,6 +18,9 @@ const goToAppointments = () => {
   router.push("/patient/appointments")
 }
 
+const goToHistory = () => {
+  router.push("/patient/history")
+}
 // ================= FETCH PROFILE =================
 const fetchProfile = async () => {
   try {
@@ -89,6 +92,14 @@ onMounted(fetchProfile)
         <div class="card p-3 shadow-sm cursor-pointer"
             @click="goToAppointments">
           <h5>Upcoming Appointments</h5>
+          <h3>View</h3>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card p-3 shadow-sm cursor-pointer"
+            @click="goToHistory">
+          <h5>Past Appointments</h5>
           <h3>View</h3>
         </div>
       </div>

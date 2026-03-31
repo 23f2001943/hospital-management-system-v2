@@ -191,3 +191,38 @@ class PatientService:
         db.session.commit()
 
         return {"message": "Rescheduled"}, 200
+    
+    @staticmethod
+    def get_history():
+
+        from datetime import date
+
+        patient = Patient.query.filter_by(user_id=current_user.id).first()
+
+        if not patient:
+            return []
+
+        appointments = Appointment.query.filter_by(
+            patient_id=patient.id
+        ).all()
+
+        result = []
+
+        for appt in appointments:
+
+            # only past OR completed
+            if appt.date >= date.today():
+                continue
+
+            result.append({
+                "doctor_name": appt.doctor.user.name,
+                "department": appt.doctor.department.name if appt.doctor.department else None,
+                "date": appt.date.strftime("%Y-%m-%d"),
+                "time": appt.time.strftime("%H:%M"),
+                "status": appt.status,
+                "diagnosis": appt.treatment.diagnosis if appt.treatment else None,
+                "prescription": appt.treatment.prescription if appt.treatment else None,
+                "notes": appt.treatment.notes if appt.treatment else None
+            })
+
+        return result

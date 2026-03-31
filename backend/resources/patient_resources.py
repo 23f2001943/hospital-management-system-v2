@@ -77,3 +77,10 @@ def reschedule(id):
     data = request.get_json()
     response, status = PatientService.reschedule_appointment(id, data)
     return jsonify(response), status
+
+@patient_bp.route("/history", methods=["GET"])
+@auth_required("token")
+@roles_required("patient")
+def history():
+    data = PatientService.get_history()
+    return jsonify(data), 200

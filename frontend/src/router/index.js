@@ -12,6 +12,8 @@ import DoctorAppointments  from "../pages/doctor/DoctorAppointments.vue";
 import Register from "../pages/Register.vue";
 import PatientDoctors from "../pages/patient/PatientDoctors.vue";
 import PatientAppointments from "../pages/patient/PatientAppointments.vue";
+import PatientHistory from "../pages/patient/PatientHistory.vue";
+
 
 
 
@@ -28,7 +30,8 @@ const routes = [
   { path: "/doctor/appointments", component: DoctorAppointments },
   { path: "/register", component: Register },
   { path: "/patient/doctors", component: PatientDoctors },
-  { path: "/patient/appointments", component: PatientAppointments }
+  { path: "/patient/appointments", component: PatientAppointments },
+  { path: "/patient/history", component: PatientHistory }
 ];
 
 const router = createRouter({
