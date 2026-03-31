@@ -78,7 +78,13 @@ class PatientService:
             result.append({
                 "doctor_id": doc.id,
                 "name": doc.user.name,
-                "department": doc.department.name if doc.department else None
+                "department": doc.department.name if doc.department else None,
+
+                "qualification": doc.qualification,
+                "experience_years": doc.experience_years,
+                "consultation_fee": float(doc.consultation_fee) if doc.consultation_fee else None,
+                "contact_number": doc.contact_number,
+                "room_number": doc.room_number
             })
 
         return result

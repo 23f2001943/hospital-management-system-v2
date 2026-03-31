@@ -12,6 +12,15 @@ const expandedDoctorId = ref(null)
 
 const selectedSlot = ref(null)
 
+const viewDoctorId = ref(null)
+const toggleView = (doc) => {
+  if (viewDoctorId.value === doc.doctor_id) {
+    viewDoctorId.value = null
+  } else {
+    viewDoctorId.value = doc.doctor_id
+  }
+}
+
 const bookAppointment = async () => {
 
   if (!selectedSlot.value) {
@@ -152,12 +161,38 @@ onMounted(fetchDoctors)
             <td>{{ doc.name }}</td>
             <td>{{ doc.department }}</td>
             <td>
+
+                <button class="btn btn-info btn-sm me-2"
+                        @click="toggleView(doc)">
+                    View
+                </button>
               <button class="btn btn-success btn-sm"
                       @click="openBooking(doc)">
                 Book
               </button>
             </td>
           </tr>
+
+          <!-- VIEW DETAILS ROW -->
+            <tr v-if="viewDoctorId === doc.doctor_id">
+            <td colspan="3">
+
+                <div class="card p-3 shadow-sm bg-light">
+
+                <h5>Doctor Details</h5>
+
+                <p><b>Name:</b> {{ doc.name }}</p>
+                <p><b>Department:</b> {{ doc.department }}</p>
+                <p><b>Qualification:</b> {{ doc.qualification || '-' }}</p>
+                <p><b>Experience:</b> {{ doc.experience_years || '-' }} years</p>
+                <p><b>Consultation Fee:</b> ₹{{ doc.consultation_fee || '-' }}</p>
+                <p><b>Contact:</b> {{ doc.contact_number || '-' }}</p>
+                <p><b>Room:</b> {{ doc.room_number || '-' }}</p>
+
+                </div>
+
+            </td>
+            </tr>
 
           <!-- EXPANDED ROW -->
           <tr v-if="expandedDoctorId === doc.doctor_id">
