@@ -9,6 +9,7 @@ import PatientManagement from "../pages/admin/PatientManagement.vue";
 import AppointmentManagement from "../pages/admin/AppointmentManagement.vue"
 import DoctorPatients from "../pages/doctor/DoctorPatients.vue"
 import DoctorAppointments  from "../pages/doctor/DoctorAppointments.vue";
+import Register from "../pages/Register.vue";
 
 const routes = [
   { path: "/", redirect: "/login" },
@@ -20,7 +21,8 @@ const routes = [
   { path: "/admin/patients", component: PatientManagement },
   { path: "/admin/appointments", component: AppointmentManagement },
   { path: "/doctor/patients", component: DoctorPatients },
-  { path: "/doctor/appointments", component: DoctorAppointments }
+  { path: "/doctor/appointments", component: DoctorAppointments },
+  { path: "/register", component: Register }
 ];
 
 const router = createRouter({

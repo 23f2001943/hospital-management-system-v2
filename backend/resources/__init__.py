@@ -1,3 +1,4 @@
 from resources.auth_resources import auth_bp
 from resources.admin_resources import admin_bp
 from resources.doctor_resources import doctor_bp
+from resources.patient_resources import patient_bp
