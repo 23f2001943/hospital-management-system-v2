@@ -1,7 +1,8 @@
 from models import Patient
 from extensions import db
 from flask_security import current_user
-from models import Doctor, User, Department
+from models import Doctor, User, Department, Appointment, Patient
+from datetime import datetime
 
 class PatientService:
 
@@ -81,3 +82,39 @@ class PatientService:
             })
 
         return result
+    
+    @staticmethod
+    def book_appointment(data):
+
+        doctor_id = data.get("doctor_id")
+        date = data.get("date")
+        time = data.get("time")
+
+        patient = Patient.query.filter_by(user_id=current_user.id).first()
+
+        if not patient:
+            return {"message": "Patient not found"}, 404
+
+        # prevent double booking
+        existing = Appointment.query.filter_by(
+            doctor_id=doctor_id,
+            date=datetime.strptime(date, "%Y-%m-%d").date(),
+            time=datetime.strptime(time, "%H:%M").time(),
+            status="Booked"
+        ).first()
+
+        if existing:
+            return {"message": "Slot already booked"}, 400
+
+        appointment = Appointment(
+            doctor_id=doctor_id,
+            patient_id=patient.id,
+            date=datetime.strptime(date, "%Y-%m-%d").date(),
+            time=datetime.strptime(time, "%H:%M").time(),
+            status="Booked"
+        )
+
+        db.session.add(appointment)
+        db.session.commit()
+
+        return {"message": "Appointment booked"}, 201

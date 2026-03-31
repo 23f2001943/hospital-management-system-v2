@@ -33,3 +33,24 @@ def get_doctors():
     doctors = PatientService.get_doctors(name, specialization)
 
     return jsonify(doctors), 200
+
+@patient_bp.route("/doctor/<int:doctor_id>/availability", methods=["GET"])
+@auth_required("token")
+@roles_required("patient")
+def get_availability(doctor_id):
+    from models import Doctor
+
+    doctor = Doctor.query.get(doctor_id)
+
+    if not doctor:
+        return {"message": "Doctor not found"}, 404
+
+    return doctor.availability or [], 200
+
+@patient_bp.route("/book", methods=["POST"])
+@auth_required("token")
+@roles_required("patient")
+def book_appointment():
+    data = request.get_json()
+    response, status = PatientService.book_appointment(data)
+    return jsonify(response), status
