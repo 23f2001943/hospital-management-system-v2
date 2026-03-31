@@ -7,6 +7,8 @@ const appointments = ref([])
 const expandedId = ref(null)
 const availability = ref([])
 const selectedSlot = ref(null)
+const today = new Date()
+today.setHours(0,0,0,0)
 
 // FETCH
 const fetchAppointments = async () => {
@@ -20,7 +22,20 @@ const fetchAppointments = async () => {
       }
     )
 
-    appointments.value = res.data.filter(a => a.status === "Booked")
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    appointments.value = res.data.filter(a => {
+      const parts = a.date.split("-")   // ["2026","03","31"]
+
+      const apptDate = new Date(
+        Number(parts[0]),
+        Number(parts[1]) - 1,
+        Number(parts[2])
+      )
+
+      return apptDate >= today
+    })
 
   } catch (err) {
     console.error(err)
@@ -124,6 +139,7 @@ onMounted(fetchAppointments)
           <th>Department</th>
           <th>Date</th>
           <th>Time</th>
+          <th>Status</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -138,12 +154,26 @@ onMounted(fetchAppointments)
         <td>{{ a.date }}</td>
         <td>{{ a.time === '09:00' ? '08:00 - 12:00' : '16:00 - 21:00' }}</td>
         <td>
+            <span
+            :class="[
+                'badge',
+                a.status === 'Booked' ? 'bg-success' :
+                a.status === 'Cancelled' ? 'bg-danger' :
+                'bg-secondary'
+            ]"
+            >
+            {{ a.status }}
+            </span>
+        </td>
+        <td>
             <button class="btn btn-danger btn-sm me-2"
+                    :disabled="a.status === 'Cancelled'"
                     @click="cancelAppointment(a.appointment_id)">
             Cancel
             </button>
 
             <button class="btn btn-warning btn-sm"
+                    :disabled="a.status === 'Cancelled'"
                     @click="rescheduleAppointment(a)">
             Reschedule
             </button>
