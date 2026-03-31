@@ -226,3 +226,30 @@ class PatientService:
             })
 
         return result
+    
+    @staticmethod
+    def get_completed_history():
+
+        patient = Patient.query.filter_by(user_id=current_user.id).first()
+
+        if not patient:
+            return []
+
+        appointments = Appointment.query.filter_by(
+            patient_id=patient.id,
+            status="Completed"
+        ).all()
+
+        result = []
+
+        for appt in appointments:
+            result.append({
+                "doctor_name": appt.doctor.user.name,
+                "date": appt.date.strftime("%Y-%m-%d"),
+                "time": appt.time.strftime("%H:%M"),
+                "diagnosis": appt.treatment.diagnosis if appt.treatment else None,
+                "prescription": appt.treatment.prescription if appt.treatment else None,
+                "notes": appt.treatment.notes if appt.treatment else None
+            })
+
+        return result

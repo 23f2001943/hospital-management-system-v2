@@ -84,3 +84,10 @@ def reschedule(id):
 def history():
     data = PatientService.get_history()
     return jsonify(data), 200
+
+@patient_bp.route("/history/completed", methods=["GET"])
+@auth_required("token")
+@roles_required("patient")
+def completed_history():
+    data = PatientService.get_completed_history()
+    return jsonify(data), 200

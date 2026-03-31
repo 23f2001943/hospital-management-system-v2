@@ -6,6 +6,8 @@ import axios from "axios"
 const profile = ref({})
 const editMode = ref(false)
 
+const showCompleted = ref(false)
+const completedAppointments = ref([])
 
 import { useRouter } from "vue-router"
 const router = useRouter()
@@ -40,6 +42,29 @@ const fetchProfile = async () => {
   }
 }
 
+const fetchCompletedAppointments = async () => {
+  try {
+    const res = await axios.get(
+      "http://127.0.0.1:5000/api/patient/history/completed",
+      {
+        headers: {
+          "Authentication-Token": localStorage.getItem("token")
+        }
+      }
+    )
+
+    completedAppointments.value = res.data
+
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const openCompleted = () => {
+  showCompleted.value = true
+  fetchCompletedAppointments()
+}
+
 // ================= UPDATE PROFILE =================
 const updateProfile = async () => {
   try {
@@ -72,10 +97,17 @@ onMounted(fetchProfile)
     <div class="d-flex justify-content-between align-items-center border p-3 mb-4">
       <h4>Welcome {{ profile.name }}</h4>
 
-      <button class="btn btn-primary btn-sm"
-              @click="editMode = !editMode">
-        Edit Profile
-      </button>
+      <div>
+        <button class="btn btn-success btn-sm me-2"
+                @click="openCompleted">
+          Completed Appointments
+        </button>
+
+        <button class="btn btn-primary btn-sm"
+                @click="editMode = !editMode">
+          Edit Profile
+        </button>
+      </div>
     </div>
 
     <div class="row mb-4">
@@ -105,6 +137,57 @@ onMounted(fetchProfile)
       </div>
 
     </div>
+   <!---history of completed appointments-->
+    <div v-if="showCompleted" class="card p-4 shadow mt-3 position-relative">
+
+  <!-- CLOSE -->
+  <button class="btn btn-sm btn-danger position-absolute"
+          style="top: 10px; right: 10px;"
+          @click="showCompleted = false">
+    ✖
+  </button>
+
+  <h4 class="mb-3 text-success">Completed Appointments</h4>
+
+  <div v-if="completedAppointments.length === 0" class="text-muted">
+    No completed appointments yet.
+  </div>
+
+  <table v-else class="table table-bordered">
+
+    <thead class="table-light">
+      <tr>
+        <th>Doctor</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Diagnosis</th>
+        <th>Prescription</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr v-for="c in completedAppointments" :key="c.date + c.time">
+
+        <td>{{ c.doctor_name }}</td>
+        <td>{{ c.date }}</td>
+
+        <td>
+          {{ c.time === '09:00' ? '08:00 - 12:00' : '16:00 - 21:00' }}
+        </td>
+
+        <td>{{ c.diagnosis || '-' }}</td>
+        <td>{{ c.prescription || '-' }}</td>
+        <td>{{ c.notes || '-' }}</td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
 
     <!--  EDIT PROFILE BOX -->
     <div v-if="editMode" class="card p-4 shadow-sm">
