@@ -4,6 +4,10 @@ import axios from "axios"
 
 const appointments = ref([])
 
+const expandedId = ref(null)
+const availability = ref([])
+const selectedSlot = ref(null)
+
 // FETCH
 const fetchAppointments = async () => {
   try {
@@ -43,9 +47,65 @@ const cancelAppointment = async (id) => {
   }
 }
 
-// RESCHEDULE (placeholder)
-const rescheduleAppointment = (appt) => {
-  alert("Reschedule coming next")
+// RESCHEDULE 
+const rescheduleAppointment = async (appt) => {
+
+  if (expandedId.value === appt.appointment_id) {
+    expandedId.value = null
+    return
+  }
+
+  expandedId.value = appt.appointment_id
+  selectedSlot.value = null
+
+  try {
+    const res = await axios.get(
+      `http://127.0.0.1:5000/api/patient/doctor/${appt.doctor_id}/availability`,
+      {
+        headers: {
+          "Authentication-Token": localStorage.getItem("token")
+        }
+      }
+    )
+
+    availability.value = res.data
+
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const submitReschedule = async (appt) => {
+
+  if (!selectedSlot.value) {
+    alert("Select a slot")
+    return
+  }
+
+  try {
+    await axios.put(
+      `http://127.0.0.1:5000/api/patient/appointment/${appt.appointment_id}/reschedule`,
+      {
+        date: selectedSlot.value.date,
+        time: selectedSlot.value.time
+      },
+      {
+        headers: {
+          "Authentication-Token": localStorage.getItem("token")
+        }
+      }
+    )
+
+    alert("Rescheduled successfully")
+
+    expandedId.value = null
+    selectedSlot.value = null
+
+    fetchAppointments()
+
+  } catch (err) {
+    alert(err.response?.data?.message || "Error")
+  }
 }
 
 onMounted(fetchAppointments)
@@ -70,28 +130,90 @@ onMounted(fetchAppointments)
 
       <tbody>
 
-        <tr v-for="a in appointments" :key="a.appointment_id">
+        <template v-for="a in appointments" :key="a.appointment_id">
 
-          <td>{{ a.doctor_name }}</td>
-          <td>{{ a.department }}</td>
-          <td>{{ a.date }}</td>
-          <td>{{ a.time }}</td>
-
-          <td>
-
+        <tr>
+        <td>{{ a.doctor_name }}</td>
+        <td>{{ a.department }}</td>
+        <td>{{ a.date }}</td>
+        <td>{{ a.time === '09:00' ? '08:00 - 12:00' : '16:00 - 21:00' }}</td>
+        <td>
             <button class="btn btn-danger btn-sm me-2"
                     @click="cancelAppointment(a.appointment_id)">
-              Cancel
+            Cancel
             </button>
 
             <button class="btn btn-warning btn-sm"
                     @click="rescheduleAppointment(a)">
-              Reschedule
+            Reschedule
+            </button>
+        </td>
+        </tr>
+
+        <!-- EXPANDED ROW -->
+        <tr v-if="expandedId === a.appointment_id">
+        <td colspan="5">
+
+            <div class="card p-3 shadow-sm">
+
+            <h5>Reschedule Appointment</h5>
+
+            <div v-for="day in availability" :key="day.date"
+                class="d-flex align-items-center mb-2">
+
+                <div style="width: 150px;">
+                <b>{{ day.date }}</b>
+                </div>
+
+                <!-- MORNING -->
+                <button class="btn me-2"
+                        :class="[
+                        day.morning ? 'btn-success' : 'btn-outline-secondary',
+                        selectedSlot?.date === day.date && selectedSlot?.time === '09:00'
+                            ? 'btn-warning'
+                            : ''
+                        ]"
+                        :disabled="!day.morning"
+                        @click="selectedSlot = {
+                        date: day.date,
+                        time: '09:00',
+                        label: '08:00 - 12:00'
+                        }">
+                08:00 - 12:00
+                </button>
+
+                <!-- EVENING -->
+                <button class="btn"
+                        :class="[
+                        day.evening ? 'btn-success' : 'btn-outline-secondary',
+                        selectedSlot?.date === day.date && selectedSlot?.time === '17:00'
+                            ? 'btn-warning'
+                            : ''
+                        ]"
+                        :disabled="!day.evening"
+                        @click="selectedSlot = {
+                        date: day.date,
+                        time: '17:00',
+                        label: '16:00 - 21:00'
+                        }">
+                16:00 - 21:00
+
+                </button>
+
+            </div>
+
+            <button class="btn btn-primary btn-sm mt-2"
+                    :disabled="!selectedSlot"
+                    @click="submitReschedule(a)">
+                Submit
             </button>
 
-          </td>
+            </div>
 
+        </td>
         </tr>
+
+        </template>
 
       </tbody>
 

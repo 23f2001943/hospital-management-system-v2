@@ -144,7 +144,8 @@ class PatientService:
                 "department": appt.doctor.department.name if appt.doctor.department else None,
                 "date": appt.date.strftime("%Y-%m-%d"),
                 "time": appt.time.strftime("%H:%M"),
-                "status": appt.status
+                "status": appt.status,
+                "doctor_id": appt.doctor_id
             })
 
         return result
@@ -161,3 +162,32 @@ class PatientService:
         db.session.commit()
 
         return {"message": "Cancelled"}, 200
+    
+    @staticmethod
+    def reschedule_appointment(appointment_id, data):
+
+        appointment = Appointment.query.get(appointment_id)
+
+        if not appointment:
+            return {"message": "Not found"}, 404
+
+        new_date = datetime.strptime(data["date"], "%Y-%m-%d").date()
+        new_time = datetime.strptime(data["time"], "%H:%M").time()
+
+        # conflict check
+        existing = Appointment.query.filter_by(
+            doctor_id=appointment.doctor_id,
+            date=new_date,
+            time=new_time,
+            status="Booked"
+        ).first()
+
+        if existing:
+            return {"message": "Slot already booked"}, 400
+
+        appointment.date = new_date
+        appointment.time = new_time
+
+        db.session.commit()
+
+        return {"message": "Rescheduled"}, 200

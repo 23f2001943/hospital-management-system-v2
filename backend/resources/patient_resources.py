@@ -69,3 +69,11 @@ def get_appointments():
 def cancel_appointment(id):
     response, status = PatientService.cancel_appointment(id)
     return jsonify(response), status
+
+@patient_bp.route("/appointment/<int:id>/reschedule", methods=["PUT"])
+@auth_required("token")
+@roles_required("patient")
+def reschedule(id):
+    data = request.get_json()
+    response, status = PatientService.reschedule_appointment(id, data)
+    return jsonify(response), status
