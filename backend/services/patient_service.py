@@ -1,7 +1,7 @@
 from models import Patient
 from extensions import db
 from flask_security import current_user
-
+from models import Doctor, User, Department
 
 class PatientService:
 
@@ -53,3 +53,31 @@ class PatientService:
         db.session.commit()
 
         return {"message": "Profile updated successfully"}, 200
+    
+    
+
+    @staticmethod
+    def get_doctors(name=None, specialization=None):
+
+        query = Doctor.query.join(User).join(Department)
+
+        if name:
+            query = query.filter(User.name.ilike(f"%{name}%"))
+
+        if specialization:
+            query = query.filter(
+                Department.name.ilike(f"%{specialization}%")
+            )
+
+        doctors = query.all()
+
+        result = []
+
+        for doc in doctors:
+            result.append({
+                "doctor_id": doc.id,
+                "name": doc.user.name,
+                "department": doc.department.name if doc.department else None
+            })
+
+        return result

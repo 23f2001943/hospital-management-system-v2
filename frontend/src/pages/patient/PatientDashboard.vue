@@ -6,6 +6,13 @@ import axios from "axios"
 const profile = ref({})
 const editMode = ref(false)
 
+
+import { useRouter } from "vue-router"
+const router = useRouter()
+
+const goToDoctors = () => {
+  router.push("/patient/doctors")
+}
 // ================= FETCH PROFILE =================
 const fetchProfile = async () => {
   try {
@@ -53,7 +60,7 @@ onMounted(fetchProfile)
 <template>
   <div class="container mt-4">
 
-    <!-- 🔷 NAVBAR -->
+    <!--  NAVBAR -->
     <div class="d-flex justify-content-between align-items-center border p-3 mb-4">
       <h4>Welcome {{ profile.name }}</h4>
 
@@ -63,7 +70,19 @@ onMounted(fetchProfile)
       </button>
     </div>
 
-    <!-- 🔷 EDIT PROFILE BOX -->
+    <div class="row mb-4">
+
+      <div class="col-md-4">
+        <div class="card p-3 shadow-sm cursor-pointer"
+            @click="goToDoctors">
+          <h5>Doctors</h5>
+          <h3>View</h3>
+        </div>
+      </div>
+
+    </div>
+
+    <!--  EDIT PROFILE BOX -->
     <div v-if="editMode" class="card p-4 shadow-sm">
 
       <h5 class="mb-3">Edit Profile</h5>

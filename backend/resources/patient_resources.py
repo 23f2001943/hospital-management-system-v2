@@ -20,3 +20,16 @@ def update_profile():
     data = request.get_json()
     response, status = PatientService.update_profile(data)
     return jsonify(response), status
+
+@patient_bp.route("/doctors", methods=["GET"])
+@auth_required("token")
+@roles_required("patient")
+def get_doctors():
+    name = request.args.get("name")
+    specialization = request.args.get("specialization")
+
+    from services.admin_service import AdminService
+
+    doctors = PatientService.get_doctors(name, specialization)
+
+    return jsonify(doctors), 200
