@@ -87,8 +87,8 @@ class DoctorService:
         if not appointment:
             return {"message": "Appointment not found"}, 404
 
-        if status not in ["Completed", "Cancelled"]:
-            return {"message": "Invalid status"}, 400
+        if status not in ["Cancelled"]:
+            return {"message": "Only cancellation allowed"}, 400
 
         appointment.status = status
         db.session.commit()

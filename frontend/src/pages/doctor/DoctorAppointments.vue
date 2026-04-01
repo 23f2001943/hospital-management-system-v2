@@ -58,25 +58,7 @@ const cancelAppointment = async (id) => {
     console.error(err)
   }
 }
-// complete appointment
-const completeAppointment = async (id) => {
-  try {
-    await axios.patch(
-      `http://127.0.0.1:5000/api/doctor/appointment/${id}/status`,
-      { status: "Completed" },
-      {
-        headers: {
-          "Authentication-Token": localStorage.getItem("token")
-        }
-      }
-    )
 
-    fetchAppointments()
-
-  } catch (err) {
-    console.error(err)
-  }
-}
 // submit treatment
 const submitTreatment = async (id) => {
   try {
@@ -131,12 +113,7 @@ const submitTreatment = async (id) => {
                 {{ expandedId === a.appointment_id ? "Close" : "View" }}
             </button>
 
-            <!-- COMPLETE -->
-            <button v-if="a.status === 'Booked'"
-                    class="btn btn-success btn-sm"
-                    @click="completeAppointment(a.appointment_id)">
-                Complete
-            </button>
+            
 
             <!-- CANCEL BUTTON (ONLY FOR BOOKED) -->
             <button v-if="a.status === 'Booked'"

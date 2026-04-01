@@ -65,6 +65,11 @@ const openCompleted = () => {
   fetchCompletedAppointments()
 }
 
+const logout = () => {
+  localStorage.removeItem("token")
+  router.push("/login")
+}
+
 // ================= UPDATE PROFILE =================
 const updateProfile = async () => {
   try {
@@ -103,10 +108,16 @@ onMounted(fetchProfile)
           Completed Appointments
         </button>
 
-        <button class="btn btn-primary btn-sm"
+        <button class="btn btn-primary btn-sm me-2"
                 @click="editMode = !editMode">
           Edit Profile
         </button>
+
+        <button class="btn btn-danger btn-ms"
+                @click="logout">
+          Logout
+        </button>
+
       </div>
     </div>
 

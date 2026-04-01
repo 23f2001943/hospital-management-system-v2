@@ -267,11 +267,7 @@ onMounted(() => {
             {{ expandedId === appt.appointment_id ? "Close" : "View" }}
           </button>
 
-          <button @click="updateStatus(appt.appointment_id, 'Completed')"
-                  class="btn btn-success btn-sm me-2"
-                  v-if="appt.status === 'Booked'">
-            Complete
-          </button>
+          
 
           <button @click="updateStatus(appt.appointment_id, 'Cancelled')"
                   class="btn btn-danger btn-sm"
