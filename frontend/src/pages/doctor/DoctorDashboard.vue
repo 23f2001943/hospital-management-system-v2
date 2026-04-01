@@ -16,6 +16,41 @@ const goToAvailability = () => {
 }
 const availability = ref([])
 
+const expandedId = ref(null)
+const treatmentForm = ref({})
+
+const toggleView = (id) => {
+  expandedId.value = expandedId.value === id ? null : id
+
+  if (!treatmentForm.value[id]) {
+    treatmentForm.value[id] = {
+      diagnosis: "",
+      prescription: "",
+      notes: ""
+    }
+  }
+}
+
+const submitTreatment = async (id) => {
+  try {
+    await axios.post(
+      `http://127.0.0.1:5000/api/doctor/appointment/${id}/treatment`,
+      treatmentForm.value[id],
+      {
+        headers: {
+          "Authentication-Token": localStorage.getItem("token")
+        }
+      }
+    )
+
+    alert("Treatment saved")
+    fetchDashboard()
+
+  } catch (err) {
+    console.error(err)
+  }
+}
+
 // generate next 7 days
 const generateDates = () => {
   const today = new Date()
@@ -217,18 +252,82 @@ onMounted(() => {
 
       <div v-if="todayAppointments.length === 0">No appointments today</div>
 
-      <div v-for="appt in todayAppointments" :key="appt.appointment_id" class="border p-2 mb-2 rounded">
-        <p><b>Patient:</b> {{ appt.patient_name }}</p>
-        <p><b>Time:</b> {{ appt.time }}</p>
-        <p><b>Status:</b> {{ appt.status }}</p>
+      <template v-for="appt in todayAppointments" :key="appt.appointment_id">
 
-        <button @click="updateStatus(appt.appointment_id, 'Completed')" class="btn btn-success btn-sm me-2">
-          Complete
-        </button>
-        <button @click="updateStatus(appt.appointment_id, 'Cancelled')" class="btn btn-danger btn-sm">
-          Cancel
-        </button>
-      </div>
+        <!-- MAIN CARD -->
+        <div class="border p-2 mb-2 rounded">
+
+          <p><b>Patient:</b> {{ appt.patient_name }}</p>
+          <p><b>Time:</b> {{ appt.time }}</p>
+          <p><b>Status:</b> {{ appt.status }}</p>
+
+          <!-- ACTIONS -->
+          <button class="btn btn-primary btn-sm me-2"
+                  @click="toggleView(appt.appointment_id)">
+            {{ expandedId === appt.appointment_id ? "Close" : "View" }}
+          </button>
+
+          <button @click="updateStatus(appt.appointment_id, 'Completed')"
+                  class="btn btn-success btn-sm me-2"
+                  v-if="appt.status === 'Booked'">
+            Complete
+          </button>
+
+          <button @click="updateStatus(appt.appointment_id, 'Cancelled')"
+                  class="btn btn-danger btn-sm"
+                  v-if="appt.status === 'Booked'">
+            Cancel
+          </button>
+
+        </div>
+
+        <!-- 🔥 EXPANDED VIEW -->
+        <div v-if="expandedId === appt.appointment_id"
+            class="card p-3 mb-3 shadow-sm">
+
+          <h5>Appointment Details</h5>
+
+          <p><b>Patient:</b> {{ appt.patient_name }}</p>
+          <p><b>Date:</b> {{ appt.date }}</p>
+          <p><b>Time:</b> {{ appt.time }}</p>
+          <p><b>Status:</b> {{ appt.status }}</p>
+
+          <hr>
+
+          <div v-if="appt.status !== 'Cancelled'">
+
+            <div class="mb-2">
+              <label>Diagnosis</label>
+              <input v-model="treatmentForm[appt.appointment_id].diagnosis"
+                    class="form-control" />
+            </div>
+
+            <div class="mb-2">
+              <label>Prescription</label>
+              <input v-model="treatmentForm[appt.appointment_id].prescription"
+                    class="form-control" />
+            </div>
+
+            <div class="mb-2">
+              <label>Notes</label>
+              <input v-model="treatmentForm[appt.appointment_id].notes"
+                    class="form-control" />
+            </div>
+
+            <button class="btn btn-success btn-sm"
+                    @click="submitTreatment(appt.appointment_id)">
+              Save Treatment
+            </button>
+
+          </div>
+
+          <div v-else>
+            <p class="text-danger">This appointment is cancelled</p>
+          </div>
+
+        </div>
+
+      </template>
     </div>
 
     
