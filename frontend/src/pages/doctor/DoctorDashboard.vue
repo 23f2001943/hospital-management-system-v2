@@ -19,6 +19,13 @@ const availability = ref([])
 const expandedId = ref(null)
 const treatmentForm = ref({})
 
+const doctorName = ref("")
+
+const logout = () => {
+  localStorage.removeItem("token")
+  router.push("/login")
+}
+
 const toggleView = (id) => {
   expandedId.value = expandedId.value === id ? null : id
 
@@ -101,6 +108,9 @@ const fetchDashboard = async () => {
     upcomingAppointments.value = res.data.upcoming
     pastAppointments.value = res.data.past
 
+    doctorName.value = res.data.doctor_name || "Doctor"
+
+
   } catch (err) {
     console.error(err)
   }
@@ -178,7 +188,14 @@ onMounted(() => {
 <template>
   <div class="container mt-4">
 
-    <h2 class="mb-4">Doctor Dashboard</h2>
+    <div class="d-flex justify-content-between align-items-center border p-3 mb-4">
+    <h4>Welcome Dr. {{ doctorName }}</h4>
+
+    <button class="btn btn-danger btn-sm"
+            @click="logout">
+      Logout
+    </button>
+  </div>
 
     <!-- SUMMARY CARDS -->
     <div class="row mb-4">

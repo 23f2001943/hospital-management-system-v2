@@ -43,6 +43,7 @@ class DoctorService:
                 past_appts.append(data)
 
         return {
+            "doctor_name": doctor.user.name, 
             "today": today_appts,
             "upcoming": upcoming_appts,
             "past": past_appts
