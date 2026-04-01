@@ -217,10 +217,11 @@ onMounted(fetchDoctors)
                     <!-- MORNING -->
                     <button class="btn me-2"
                             :class="[
-                            day.morning ? 'btn-success' : 'btn-outline-secondary',
-                            selectedSlot?.date === day.date && selectedSlot?.time === '09:00' ? 'btn-warning' : ''
+                              day.morning_booked ? 'btn-danger' :
+                              day.morning ? 'btn-success' : 'btn-outline-secondary',
+                              selectedSlot?.date === day.date && selectedSlot?.time === '09:00' ? 'btn-warning' : ''
                             ]"
-                            :disabled="!day.morning"
+                            :disabled="!day.morning || day.morning_booked"
                             @click="selectedSlot = { date: day.date, time: '09:00' }">
                     08:00 - 12:00
                     </button>
@@ -228,10 +229,11 @@ onMounted(fetchDoctors)
                     <!-- EVENING -->
                     <button class="btn"
                             :class="[
-                            day.evening ? 'btn-success' : 'btn-outline-secondary',
-                            selectedSlot?.date === day.date && selectedSlot?.time === '17:00' ? 'btn-warning' : ''
+                              day.evening_booked ? 'btn-danger' :
+                              day.evening ? 'btn-success' : 'btn-outline-secondary',
+                              selectedSlot?.date === day.date && selectedSlot?.time === '17:00' ? 'btn-warning' : ''
                             ]"
-                            :disabled="!day.evening"
+                            :disabled="!day.evening || day.evening_booked"
                             @click="selectedSlot = { date: day.date, time: '17:00' }">
                     16:00 - 21:00
                     </button>

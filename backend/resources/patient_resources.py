@@ -1,6 +1,9 @@
 from flask import Blueprint, request, jsonify
 from flask_security import auth_required, roles_required
 from services.patient_service import PatientService
+from models import Appointment
+from datetime import datetime
+
 
 patient_bp = Blueprint("patient", __name__, url_prefix="/api/patient")
 
@@ -45,7 +48,39 @@ def get_availability(doctor_id):
     if not doctor:
         return {"message": "Doctor not found"}, 404
 
-    return doctor.availability or [], 200
+    
+    availability = doctor.availability or []
+
+    result = []
+
+    for day in availability:
+
+        date_obj = datetime.strptime(day["date"], "%Y-%m-%d").date()
+
+        # check bookings
+        morning_booked = Appointment.query.filter_by(
+            doctor_id=doctor_id,
+            date=date_obj,
+            time=datetime.strptime("09:00", "%H:%M").time(),
+            status="Booked"
+        ).first() is not None
+
+        evening_booked = Appointment.query.filter_by(
+            doctor_id=doctor_id,
+            date=date_obj,
+            time=datetime.strptime("17:00", "%H:%M").time(),
+            status="Booked"
+        ).first() is not None
+
+        result.append({
+            "date": day["date"],
+            "morning": day.get("morning"),
+            "evening": day.get("evening"),
+            "morning_booked": morning_booked,
+            "evening_booked": evening_booked
+        })
+
+    return result, 200
 
 @patient_bp.route("/book", methods=["POST"])
 @auth_required("token")
