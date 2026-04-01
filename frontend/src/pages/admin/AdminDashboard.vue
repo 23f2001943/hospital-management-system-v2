@@ -9,6 +9,8 @@ const goToAppointments = () => {
   router.push("/admin/appointments")
 }
 
+const adminName = ref("")
+
 const fetchStats = async () => {
   try {
     const token = localStorage.getItem("token")
@@ -23,10 +25,16 @@ const fetchStats = async () => {
     )
 
     stats.value = response.data
+    adminName.value = response.data.admin_name || "Admin"
   } catch (err) {
     console.error(err)
     error.value = "Failed to load dashboard stats"
   }
+}
+
+const logout = () => {
+  localStorage.removeItem("token")
+  router.push("/login")
 }
 
 onMounted(() => {
@@ -40,7 +48,14 @@ const goToPatients = () => {
 
 <template>
   <div class="container mt-4">
-    <h1>Admin Dashboard</h1>
+    <div class="d-flex justify-content-between align-items-center border p-3 mb-4">
+      <h4>Welcome {{ adminName }}</h4>
+
+      <button class="btn btn-danger btn-sm"
+              @click="logout">
+        Logout
+      </button>
+    </div>
 
     <div v-if="error" class="text-danger mt-3">
       {{ error }}

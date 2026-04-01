@@ -5,6 +5,8 @@ from models import User, Role, Doctor, Patient, Appointment
 import uuid
 from sqlalchemy import or_
 from datetime import datetime
+from flask_security  import current_user
+
 class AdminService:
 
     @staticmethod
@@ -68,6 +70,7 @@ class AdminService:
 
 
         return {
+            "admin_name": current_user.name, 
             "total_doctors": total_doctors,
             "total_patients": total_patients,
             "total_appointments": total_appointments
