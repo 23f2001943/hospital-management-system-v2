@@ -26,14 +26,14 @@ const logout = () => {
   router.push("/login")
 }
 
-const toggleView = (id) => {
+const toggleView = (id, appt) => {
   expandedId.value = expandedId.value === id ? null : id
 
   if (!treatmentForm.value[id]) {
     treatmentForm.value[id] = {
-      diagnosis: "",
-      prescription: "",
-      notes: ""
+      diagnosis: appt.diagnosis || "",
+      prescription: appt.prescription || "",
+      notes: appt.notes || ""
     }
   }
 }
@@ -280,7 +280,7 @@ onMounted(() => {
 
           <!-- ACTIONS -->
           <button class="btn btn-primary btn-sm me-2"
-                  @click="toggleView(appt.appointment_id)">
+                  @click="toggleView(appt.appointment_id, appt)">
             {{ expandedId === appt.appointment_id ? "Close" : "View" }}
           </button>
 
@@ -294,7 +294,7 @@ onMounted(() => {
 
         </div>
 
-        <!-- 🔥 EXPANDED VIEW -->
+        <!--  EXPANDED VIEW -->
         <div v-if="expandedId === appt.appointment_id"
             class="card p-3 mb-3 shadow-sm">
 

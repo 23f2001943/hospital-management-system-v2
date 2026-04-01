@@ -25,12 +25,18 @@ class DoctorService:
         past_appts = []
 
         for appt in appointments:
+
+            treatment = appt.treatment 
             data = {
                 "appointment_id": appt.id,
                 "patient_name": appt.patient.user.name,
                 "date": appt.date.strftime("%Y-%m-%d"),
                 "time": appt.time.strftime("%H:%M"),
-                "status": appt.status
+                "status": appt.status,
+
+                "diagnosis": treatment.diagnosis if treatment else "",
+                "prescription": treatment.prescription if treatment else "",
+                "notes": treatment.notes if treatment else ""
             }
 
             if appt.date == today:

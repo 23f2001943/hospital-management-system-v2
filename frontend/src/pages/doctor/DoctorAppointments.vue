@@ -28,14 +28,14 @@ const fetchAppointments = async () => {
 onMounted(fetchAppointments)
 
 // toggle expand
-const toggleView = (id) => {
+const toggleView = (id, appt) => {
   expandedId.value = expandedId.value === id ? null : id
 
   if (!treatmentForm.value[id]) {
     treatmentForm.value[id] = {
-      diagnosis: "",
-      prescription: "",
-      notes: ""
+      diagnosis: appt.diagnosis || "",
+      prescription: appt.prescription || "",
+      notes: appt.notes || ""
     }
   }
 }
@@ -109,7 +109,7 @@ const submitTreatment = async (id) => {
             <td>
             <!-- VIEW BUTTON -->
             <button class="btn btn-primary btn-sm me-2"
-                    @click="toggleView(a.appointment_id)">
+                    @click="toggleView(a.appointment_id, a)">
                 {{ expandedId === a.appointment_id ? "Close" : "View" }}
             </button>
 
