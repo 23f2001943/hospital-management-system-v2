@@ -1,3 +1,4 @@
+
 from flask import Flask
 from config import LocalDevelopmentConfig
 from extensions import db,security
@@ -6,7 +7,7 @@ from flask_security.datastore import SQLAlchemyUserDatastore
 from resources import auth_bp, admin_bp , doctor_bp, patient_bp
 from flask_cors import CORS
 
-
+from celery_factory import celery, init_celery
 
 def create_app():
     app = Flask(__name__)
@@ -30,6 +31,9 @@ def create_app():
     app.register_blueprint(doctor_bp)
     app.register_blueprint(patient_bp)
 
+    init_celery(app)
+
+    
     # create tables
     with app.app_context():
         db.create_all()

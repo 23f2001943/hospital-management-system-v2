@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_security import auth_required
 from flask_security.decorators import roles_required
 from services.admin_service import AdminService
+from tasks.test import add
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/api/admin")
 
@@ -133,3 +134,8 @@ def get_patient_history(patient_id):
     history = AdminService.get_patient_history(patient_id)
 
     return jsonify(history), 200
+
+@admin_bp.route("/test-task")
+def test_task():
+    result = add.delay(5, 7)
+    return {"task_id": result.id}, 200
