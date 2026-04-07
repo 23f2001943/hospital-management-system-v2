@@ -40,3 +40,4 @@ celery = make_celery(flask_app)
 
 import tasks.reminders
 import tasks.reports
+import tasks.exports

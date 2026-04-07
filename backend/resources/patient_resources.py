@@ -3,6 +3,9 @@ from flask_security import auth_required, roles_required
 from services.patient_service import PatientService
 from models import Appointment
 from datetime import datetime
+from flask_security import current_user
+from celery.result import AsyncResult
+from flask import send_file
 
 
 patient_bp = Blueprint("patient", __name__, url_prefix="/api/patient")
@@ -126,3 +129,51 @@ def history():
 def completed_history():
     data = PatientService.get_completed_history()
     return jsonify(data), 200
+
+
+@patient_bp.route("/export-history", methods=["POST"])
+@auth_required("token")
+@roles_required("patient")
+def export_csv():
+
+    from tasks.exports import export_history   
+
+    patient_id = current_user.patient.id
+
+    task = export_history.delay(patient_id)
+
+    return {
+        "message": "Export started",
+        "task_id": task.id
+    }, 200
+
+
+@patient_bp.route("/export-status/<task_id>", methods=["GET"])
+@auth_required("token")
+@roles_required("patient")
+def export_status(task_id):
+
+    from celery_worker import celery   
+
+    task = AsyncResult(task_id, app=celery)
+
+    if task.state == "SUCCESS":
+        return {
+            "status": "completed",
+            "file": task.result
+        }
+
+    return {
+        "status": task.state
+    }
+
+
+
+@patient_bp.route("/download-file", methods=["GET"])
+@auth_required("token")
+@roles_required("patient")
+def download_file():
+
+    file_path = request.args.get("path")
+
+    return send_file(file_path, as_attachment=True)

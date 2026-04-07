@@ -12,7 +12,7 @@ def monthly_report():
     current_month = today.month
     current_year = today.year
 
-    # 📅 Month range (FIXED)
+    #  Month range (FIXED)
     start_date = date(current_year, current_month, 1)
 
     if current_month == 12:
@@ -29,7 +29,7 @@ def monthly_report():
         department = doc.department.name if doc.department else "N/A"
         phone = doc.contact_number or "N/A"
 
-        # 📊 Get this month's appointments
+        #  Get this month's appointments
         appointments = Appointment.query.filter(
             Appointment.doctor_id == doc.id,
             Appointment.date >= start_date,
@@ -40,7 +40,7 @@ def monthly_report():
         completed = len([a for a in appointments if a.status == "Completed"])
         cancelled = len([a for a in appointments if a.status == "Cancelled"])
 
-        # 📄 Build HTML report
+        #  Build HTML report
         html = f"""
         <h2>Monthly Report</h2>
 
@@ -85,7 +85,7 @@ def monthly_report():
 
         html += "</table>"
 
-        # 📧 Send email
+        #  Send email
         try:
             msg = Message(
                 subject="Monthly Report",

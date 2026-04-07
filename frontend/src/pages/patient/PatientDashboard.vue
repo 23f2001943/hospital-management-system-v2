@@ -2,6 +2,10 @@
 import { ref, onMounted } from "vue"
 import axios from "axios"
 
+
+const taskId = ref(null)
+const filePath = ref(null)
+const exportStatus = ref("idle") // idle | processing | done
 // STATE
 const profile = ref({})
 const editMode = ref(false)
@@ -23,6 +27,7 @@ const goToAppointments = () => {
 const goToHistory = () => {
   router.push("/patient/history")
 }
+
 // ================= FETCH PROFILE =================
 const fetchProfile = async () => {
   try {
@@ -91,7 +96,81 @@ const updateProfile = async () => {
   }
 }
 
-// ================= LIFECYCLE =================
+// ==== LIFECYCLE ==========
+// EXPORT HISTORY
+const exportHistory = async () => {
+  try {
+    const res = await axios.post(
+      "http://127.0.0.1:5000/api/patient/export-history",
+      {},
+      {
+        headers: {
+          "Authentication-Token": localStorage.getItem("token")
+        }
+      }
+    )
+
+    taskId.value = res.data.task_id
+    exportStatus.value = "processing"
+
+    checkStatus()
+
+  } catch (err) {
+    console.error(err)
+  }
+}
+// polling function to check status of export task
+const checkStatus = () => {
+  const interval = setInterval(async () => {
+
+    try {
+      const res = await axios.get(
+        `http://127.0.0.1:5000/api/patient/export-status/${taskId.value}`,
+        {
+          headers: {
+            "Authentication-Token": localStorage.getItem("token")
+          }
+        }
+      )
+
+      if (res.data.status === "completed") {
+        filePath.value = res.data.file
+        exportStatus.value = "done"
+        clearInterval(interval)
+      }
+
+    } catch (err) {
+      console.error(err)
+      clearInterval(interval)
+    }
+
+  }, 2000)
+}
+
+const downloadFile = async () => {
+  try {
+    const res = await axios.get(
+      `http://127.0.0.1:5000/api/patient/download-file?path=${filePath.value}`,
+      {
+        headers: {
+          "Authentication-Token": localStorage.getItem("token")
+        },
+        responseType: "blob"
+      }
+    )
+
+    const url = window.URL.createObjectURL(new Blob([res.data]))
+    const link = document.createElement("a")
+    link.href = url
+    link.setAttribute("download", "history.csv")
+    document.body.appendChild(link)
+    link.click()
+
+  } catch (err) {
+    console.error(err)
+  }
+}
+
 onMounted(fetchProfile)
 </script>
 
@@ -119,6 +198,32 @@ onMounted(fetchProfile)
         </button>
 
       </div>
+    </div>
+
+    <!-- EXPORT BUTTON -->
+    <div class="mb-3">
+
+      <!-- Idle -->
+      <button v-if="exportStatus === 'idle'"
+              class="btn btn-dark"
+              @click="exportHistory">
+        Export History
+      </button>
+
+      <!-- Processing -->
+      <button v-if="exportStatus === 'processing'"
+              class="btn btn-warning"
+              disabled>
+        Processing...
+      </button>
+
+      <!-- Done -->
+      <button v-if="exportStatus === 'done'"
+              class="btn btn-success"
+              @click="downloadFile">
+        Download History
+      </button>
+
     </div>
 
     <div class="row mb-4">
