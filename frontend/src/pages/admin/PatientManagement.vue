@@ -153,7 +153,7 @@ placeholder="Enter search value"
 <thead class="table-light">
 
 <tr>
-
+<th>ID</th>
 <th>Name</th>
 <th>Email</th>
 <th>Gender</th>
@@ -169,7 +169,7 @@ placeholder="Enter search value"
 <tbody>
 
 <tr v-for="p in activePatients" :key="p.patient_id">
-
+<td>{{ p.patient_id }}</td>
 <td>{{ p.name }}</td>
 <td>{{ p.email }}</td>
 <td>{{ p.gender }}</td>
@@ -220,7 +220,7 @@ No active patients found
 <thead class="table-light">
 
 <tr>
-
+<th>ID</th>
 <th>Name</th>
 <th>Email</th>
 <th>Gender</th>
@@ -236,7 +236,7 @@ No active patients found
 <tbody>
 
 <tr v-for="p in blacklistedPatients" :key="p.patient_id">
-
+<td>{{ p.patient_id }}</td>
 <td>{{ p.name }}</td>
 <td>{{ p.email }}</td>
 <td>{{ p.gender }}</td>
