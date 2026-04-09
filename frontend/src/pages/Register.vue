@@ -7,6 +7,15 @@
     <input v-model="password" type="password" class="form-control mb-2" placeholder="Password" />
 
     <button class="btn btn-success" @click="register">Register</button>
+    <div class="mt-3">
+    <span>Already have an account?</span>
+    <span 
+      style="color: blue; cursor: pointer; margin-left: 5px;"
+      @click="goToLogin"
+    >
+      Login
+    </span>
+  </div>
   </div>
 </template>
 
@@ -22,6 +31,9 @@ export default {
     };
   },
   methods: {
+    goToLogin() {
+  this.$router.push("/login");
+},
     async register() {
       try {
         await axios.post("http://127.0.0.1:5000/auth/register", {
