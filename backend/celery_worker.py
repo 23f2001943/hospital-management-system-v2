@@ -33,7 +33,6 @@ def make_celery(app):
     return celery
 
 
-
 flask_app = create_app()
 celery = make_celery(flask_app)
 
