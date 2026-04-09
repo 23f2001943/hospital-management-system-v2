@@ -34,7 +34,8 @@ const fetchStats = async () => {
 
 const logout = () => {
   localStorage.removeItem("token")
-  router.push("/login")
+  localStorage.removeItem("role")
+  router.replace("/login")
 }
 
 onMounted(() => {

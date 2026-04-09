@@ -31,7 +31,10 @@ const routes = [
   { path: "/register", component: Register },
   { path: "/patient/doctors", component: PatientDoctors },
   { path: "/patient/appointments", component: PatientAppointments },
-  { path: "/patient/history", component: PatientHistory }
+  { path: "/patient/history", component: PatientHistory },
+  {path: "/admin/dashboard", component: AdminDashboard, meta: { requiresAuth: true, role: "admin" }},
+  {path: "/doctor/dashboard", component: DoctorDashboard, meta: { requiresAuth: true, role: "doctor" }},
+  {path: "/patient/dashboard", component: PatientDashboard, meta: { requiresAuth: true, role: "patient" }}
 ];
 
 const router = createRouter({
@@ -39,6 +42,31 @@ const router = createRouter({
   routes
 });
 
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem("token")
+  const role = localStorage.getItem("role")
+
+  // 🚫 NOT LOGGED IN → block protected routes
+  if (to.meta.requiresAuth && !token) {
+    return next("/login")
+  }
+
+  // 🔒 LOGGED IN → block login page completely
+  if (to.path === "/login" && token) {
+    if (role === "admin") return next("/admin/dashboard")
+    if (role === "doctor") return next("/doctor/dashboard")
+    if (role === "patient") return next("/patient/dashboard")
+  }
+
+  // 🚫 ROLE MISMATCH → block access
+  if (to.meta.role && role !== to.meta.role) {
+    if (role === "admin") return next("/admin/dashboard")
+    if (role === "doctor") return next("/doctor/dashboard")
+    if (role === "patient") return next("/patient/dashboard")
+  }
+
+  next()
+})
 export default router;
 
 

@@ -46,9 +46,10 @@ export default {
         localStorage.setItem("token", res.data.token);
 
         const role = res.data.roles[0];
-        if (role === "admin") this.$router.push("/admin");
-        else if (role === "doctor") this.$router.push("/doctor");
-        else this.$router.push("/patient");
+        localStorage.setItem("role", role);
+        if (role === "admin") this.$router.push("/admin/dashboard");
+        else if (role === "doctor") this.$router.push("/doctor/dashboard");
+        else this.$router.push("/patient/dashboard");
 
       } catch {
         alert("Invalid login");
