@@ -3,6 +3,7 @@ from extensions import db
 from flask_security import current_user
 from models import Doctor, User, Department, Appointment, Patient
 from datetime import datetime
+from extensions import cache
 
 class PatientService:
 
@@ -52,6 +53,8 @@ class PatientService:
             patient.date_of_birth = datetime.strptime(data["date_of_birth"], "%Y-%m-%d").date()
 
         db.session.commit()
+
+        cache.clear()
 
         return {"message": "Profile updated successfully"}, 200
     
@@ -123,6 +126,8 @@ class PatientService:
         db.session.add(appointment)
         db.session.commit()
 
+        cache.clear()
+
         return {"message": "Appointment booked"}, 201
     
     @staticmethod
@@ -167,6 +172,8 @@ class PatientService:
         appointment.status = "Cancelled"
         db.session.commit()
 
+        cache.clear()
+
         return {"message": "Cancelled"}, 200
     
     @staticmethod
@@ -195,6 +202,8 @@ class PatientService:
         appointment.time = new_time
 
         db.session.commit()
+
+        cache.clear()
 
         return {"message": "Rescheduled"}, 200
     

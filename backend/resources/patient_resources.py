@@ -6,7 +6,7 @@ from datetime import datetime
 from flask_security import current_user
 from celery.result import AsyncResult
 from flask import send_file
-
+from extensions import cache
 
 patient_bp = Blueprint("patient", __name__, url_prefix="/api/patient")
 
@@ -30,6 +30,7 @@ def update_profile():
 @patient_bp.route("/doctors", methods=["GET"])
 @auth_required("token")
 @roles_required("patient")
+@cache.cached(timeout=60, query_string=True)
 def get_doctors():
     name = request.args.get("name")
     specialization = request.args.get("specialization")
@@ -43,6 +44,7 @@ def get_doctors():
 @patient_bp.route("/doctor/<int:doctor_id>/availability", methods=["GET"])
 @auth_required("token")
 @roles_required("patient")
+@cache.cached(timeout=60, query_string=True)
 def get_availability(doctor_id):
     from models import Doctor
 
@@ -119,6 +121,7 @@ def reschedule(id):
 @patient_bp.route("/history", methods=["GET"])
 @auth_required("token")
 @roles_required("patient")
+@cache.cached(timeout=60, query_string=True)
 def history():
     data = PatientService.get_history()
     return jsonify(data), 200

@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_security import auth_required
 from flask_security.decorators import roles_required
 from services.admin_service import AdminService
-
+from extensions import cache
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/api/admin")
 
@@ -18,6 +18,7 @@ def add_doctor():
 @admin_bp.route("/dashboard/stats", methods=["GET"])
 @auth_required("token")
 @roles_required("admin")
+@cache.cached(timeout=60, query_string=True)
 def admin_dashboard_stats():
     stats = AdminService.get_dashboard_stats()
     return jsonify(stats), 200
@@ -26,6 +27,7 @@ def admin_dashboard_stats():
 @admin_bp.route("/doctors", methods=["GET"])
 @auth_required("token")
 @roles_required("admin")
+@cache.cached(timeout=60, query_string=True)
 def get_doctors():
     name = request.args.get("name")
     specialization = request.args.get("specialization")
@@ -67,6 +69,7 @@ def delete_doctor(doctor_id):
 @admin_bp.route("/patients", methods=["GET"])
 @auth_required("token")
 @roles_required("admin")
+@cache.cached(timeout=60, query_string=True)
 def get_patients():
 
     name = request.args.get("name")

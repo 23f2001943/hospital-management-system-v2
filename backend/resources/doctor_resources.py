@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_security import auth_required, roles_required
 from services.doctor_service import DoctorService
+from extensions import cache
 
 doctor_bp = Blueprint("doctor", __name__, url_prefix="/api/doctor")
 
@@ -8,6 +9,7 @@ doctor_bp = Blueprint("doctor", __name__, url_prefix="/api/doctor")
 @doctor_bp.route("/dashboard", methods=["GET"])
 @auth_required("token")
 @roles_required("doctor")
+@cache.cached(timeout=60, query_string=True)
 def dashboard():
     data = DoctorService.get_dashboard()
     return jsonify(data), 200
@@ -65,6 +67,7 @@ def update_availability():
 @doctor_bp.route("/patients", methods=["GET"])
 @auth_required("token")
 @roles_required("doctor")
+@cache.cached(timeout=60, query_string=True)
 def get_my_patients():
     data = DoctorService.get_my_patients()
     return jsonify(data), 200

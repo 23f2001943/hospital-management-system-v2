@@ -24,6 +24,10 @@ class LocalDevelopmentConfig(BaseConfig):
     MAIL_PASSWORD = None
     MAIL_DEFAULT_SENDER = "test@hms.com"
 
+    CACHE_TYPE = "RedisCache"
+    CACHE_DEFAULT_TIMEOUT = 300   # 5 minutes
+    CACHE_REDIS_URL = "redis://localhost:6379/0"
+
 
 class ProductionConfig(BaseConfig):
     DEBUG = False

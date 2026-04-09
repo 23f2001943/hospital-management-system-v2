@@ -1,7 +1,7 @@
 
 from flask import Flask
 from config import LocalDevelopmentConfig
-from extensions import db,security, mail
+from extensions import db,security, mail, cache
 from models import User, Role
 from flask_security.datastore import SQLAlchemyUserDatastore
 from resources import auth_bp, admin_bp , doctor_bp, patient_bp
@@ -31,7 +31,7 @@ def create_app():
     app.register_blueprint(patient_bp)
 
     mail.init_app(app)
-
+    cache.init_app(app)
     
     # create tables
     with app.app_context():

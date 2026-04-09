@@ -1,6 +1,6 @@
 from flask_security.datastore import SQLAlchemyUserDatastore
 from flask_security.utils import hash_password
-from extensions import db
+from extensions import db, cache
 from models import User, Role, Doctor, Patient, Appointment
 import uuid
 from sqlalchemy import or_
@@ -58,7 +58,7 @@ class AdminService:
 
         db.session.add(doctor)
         db.session.commit()
-
+        cache.clear()
         return {"message": "Doctor added successfully"}, 201
 
     @staticmethod
@@ -126,6 +126,7 @@ class AdminService:
         doctor.availability = data.get("availability", doctor.availability)
 
         db.session.commit()
+        cache.clear()
 
         return {"message": "Doctor updated successfully"}, 200
     @staticmethod
@@ -138,6 +139,7 @@ class AdminService:
 
         doctor.is_active = False
         db.session.commit()
+        cache.clear()
 
         return {"message": "Doctor blacklisted successfully"}, 200
     
@@ -165,6 +167,7 @@ class AdminService:
 
         db.session.delete(doctor)
         db.session.commit()
+        cache.clear()
 
         return {"message": "Doctor deleted permanently"}, 200
     
@@ -213,6 +216,7 @@ class AdminService:
 
         patient.is_active = False
         db.session.commit()
+        cache.clear()
 
         return {"message": "Patient blacklisted"}, 200
     
@@ -226,6 +230,7 @@ class AdminService:
 
         db.session.delete(patient)
         db.session.commit()
+        cache.clear()
 
         return {"message": "Patient deleted permanently"}, 200
     
@@ -266,6 +271,7 @@ class AdminService:
         appointment.status = "Cancelled"
 
         db.session.commit()
+        cache.clear()
 
         return {"message": "Appointment cancelled"}, 200
     
@@ -290,6 +296,7 @@ class AdminService:
             appointment.time = datetime.strptime(data["time"], "%H:%M").time()
 
         db.session.commit()
+        cache.clear()
 
         return {"message": "Appointment updated"}, 200
     

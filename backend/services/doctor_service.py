@@ -2,7 +2,7 @@ from models import Doctor, Appointment, Treatment, Patient
 from extensions import db
 from flask_security import current_user
 from datetime import datetime, date
-
+from extensions import cache
 
 class DoctorService:
 
@@ -100,6 +100,8 @@ class DoctorService:
         appointment.status = status
         db.session.commit()
 
+        cache.clear()
+
         return {"message": "Status updated"}, 200
     
     @staticmethod
@@ -135,10 +137,14 @@ class DoctorService:
 
         db.session.add(treatment)
 
+        
+
         # optional but recommended
         appointment.status = "Completed"
 
         db.session.commit()
+
+        cache.clear()
 
         return {"message": "Treatment added successfully"}, 201
     
@@ -187,6 +193,8 @@ class DoctorService:
         doctor.availability = availability
 
         db.session.commit()
+
+        cache.clear()
 
         return {"message": "Availability updated"}, 200
     
