@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from "vue"
-import axios from "axios"
+import API from "../../api";
 import { useRouter } from "vue-router"
 
 // state
@@ -40,8 +40,8 @@ const toggleView = (id, appt) => {
 
 const submitTreatment = async (id) => {
   try {
-    await axios.post(
-      `http://127.0.0.1:5000/api/doctor/appointment/${id}/treatment`,
+    await API.post(
+      `/api/doctor/appointment/${id}/treatment`,
       treatmentForm.value[id],
       {
         headers: {
@@ -78,8 +78,8 @@ const generateDates = () => {
 
 const saveAvailability = async () => {
   try {
-    await axios.put(
-      "http://127.0.0.1:5000/api/doctor/availability",
+    await API.put(
+      "/api/doctor/availability",
       { availability: availability.value },
       {
         headers: {
@@ -98,7 +98,7 @@ const saveAvailability = async () => {
 // fetch dashboard data
 const fetchDashboard = async () => {
   try {
-    const res = await axios.get("http://127.0.0.1:5000/api/doctor/dashboard", {
+    const res = await API.get("/api/doctor/dashboard", {
       headers: {
         "Authentication-Token": localStorage.getItem("token")
       }
@@ -119,8 +119,8 @@ const fetchDashboard = async () => {
 // update appointment status
 const updateStatus = async (id, status) => {
   try {
-    await axios.patch(
-      `http://127.0.0.1:5000/api/doctor/appointment/${id}/status`,
+    await API.patch(
+      `/api/doctor/appointment/${id}/status`,
       { status },
       {
         headers: {
