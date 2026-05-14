@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue"
-import axios from "axios"
+import API from "../../api"
 import { useRouter } from "vue-router"
 const router = useRouter()
 const stats = ref(null)
@@ -15,8 +15,8 @@ const fetchStats = async () => {
   try {
     const token = localStorage.getItem("token")
 
-    const response = await axios.get(
-      "http://127.0.0.1:5000/api/admin/dashboard/stats",
+    const response = await API.get(
+      "/api/admin/dashboard/stats",
       {
         headers: {
           "Authentication-Token": token
