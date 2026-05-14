@@ -1,13 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue"
-import axios from "axios"
-
+import API from "../../api"
 const history = ref([])
 
 const fetchHistory = async () => {
   try {
-    const res = await axios.get(
-      "http://127.0.0.1:5000/api/patient/history",
+    const res = await API.get(
+      "/api/patient/history",
       {
         headers: {
           "Authentication-Token": localStorage.getItem("token")
