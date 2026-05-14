@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue"
-import axios from "axios"
-
+import API from "../../api"
 // STATE
 const doctors = ref([])
 const searchName = ref("")
@@ -29,8 +28,8 @@ const bookAppointment = async () => {
   }
 
   try {
-    await axios.post(
-      "http://127.0.0.1:5000/api/patient/book",
+    await API.post(
+      "/api/patient/book",
       {
         doctor_id: expandedDoctorId.value,
         date: selectedSlot.value.date,
@@ -57,8 +56,8 @@ const bookAppointment = async () => {
 // ================= FETCH DOCTORS =================
 const fetchDoctors = async () => {
   try {
-    const res = await axios.get(
-      "http://127.0.0.1:5000/api/patient/doctors",
+    const res = await API.get(
+      "/api/patient/doctors",
       {
         params: {
           name: searchName.value,
@@ -80,8 +79,8 @@ const fetchDoctors = async () => {
 // ================= FETCH AVAILABILITY =================
 const fetchAvailability = async (doctorId) => {
   try {
-    const res = await axios.get(
-      `http://127.0.0.1:5000/api/patient/doctor/${doctorId}/availability`,
+    const res = await API.get(
+      `/api/patient/doctor/${doctorId}/availability`,
       {
         headers: {
           "Authentication-Token": localStorage.getItem("token")
