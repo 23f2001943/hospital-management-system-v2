@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from "vue"
-import axios from "axios"
+import API from "../../api"
 
 const appointments = ref([])
 const statusFilter = ref("")
@@ -19,8 +19,8 @@ const fetchAppointments = async () => {
 
   try {
 
-    const response = await axios.get(
-      "http://localhost:5000/api/admin/appointments",
+    const response = await API.get(
+      "/api/admin/appointments",
       {
         headers: {
           "Authentication-Token": token
@@ -49,8 +49,8 @@ const cancelAppointment = async (id) => {
 
   try {
 
-    await axios.patch(
-      `http://localhost:5000/api/admin/cancel-appointment/${id}`,
+    await API.patch(
+      `/api/admin/cancel-appointment/${id}`,
       {},
       {
         headers: {
@@ -71,8 +71,8 @@ const updateAppointment = async () => {
 
   try {
 
-    await axios.put(
-      `http://localhost:5000/api/admin/update-appointment/${editingAppointment.value.appointment_id}`,
+    await API.put(
+      `/api/admin/update-appointment/${editingAppointment.value.appointment_id}`,
       editingAppointment.value,
       {
         headers: {
@@ -99,8 +99,8 @@ const viewHistory = async (appt) => {
 
   try {
 
-    const response = await axios.get(
-      `http://localhost:5000/api/admin/patient-history/${appt.patient_id}`,
+    const response = await API.get(
+      `/api/admin/patient-history/${appt.patient_id}`,
       {
         headers: {
           "Authentication-Token": token
