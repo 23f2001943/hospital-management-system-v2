@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from "vue"
-import axios from "axios"
-
+import API from "../../api"
 const doctors = ref([])
 const activeDoctors = computed(() =>
   doctors.value.filter(doc => doc.is_active)
@@ -16,8 +15,8 @@ const deleteDoctor = async (id) => {
   }
 
   try {
-    await axios.delete(
-      `http://127.0.0.1:5000/api/admin/delete-doctor/${id}`,
+    await API.delete(
+      `/api/admin/delete-doctor/${id}`,
       {
         headers: {
           "Authentication-Token": token
@@ -59,8 +58,8 @@ const editDoctor = (doc) => {
 }
 
 const updateDoctor = async () => {
-  await axios.put(
-    `http://127.0.0.1:5000/api/admin/update-doctor/${editingDoctor.value.doctor_id}`,
+  await API.put(
+    `/api/admin/update-doctor/${editingDoctor.value.doctor_id}`,
     editingDoctor.value,
     {
       headers: {
@@ -75,8 +74,8 @@ const updateDoctor = async () => {
 
 const addDoctor = async () => {
   try {
-    await axios.post(
-      "http://127.0.0.1:5000/api/admin/add-doctor",
+    await API.post(
+      "/api/admin/add-doctor",
       newDoctor.value,
       {
         headers: {
@@ -108,8 +107,8 @@ const addDoctor = async () => {
 
 const fetchDoctors = async () => {
   try {
-    const response = await axios.get(
-      "http://127.0.0.1:5000/api/admin/doctors",
+    const response = await API.get(
+      "/api/admin/doctors",
       {
         headers: {
           "Authentication-Token": token
@@ -129,8 +128,8 @@ const fetchDoctors = async () => {
 }
 
 const blacklistDoctor = async (id) => {
-  await axios.patch(
-    `http://127.0.0.1:5000/api/admin/blacklist-doctor/${id}`,
+  await API.patch(
+    `/api/admin/blacklist-doctor/${id}`,
     {},
     {
       headers: {
@@ -146,8 +145,8 @@ onMounted(() => {
 })
 const fetchDepartments = async () => {
   try {
-    const response = await axios.get(
-      "http://127.0.0.1:5000/api/admin/departments",
+    const response = await API.get(
+      "/api/admin/departments",
       {
         headers: {
           "Authentication-Token": token
