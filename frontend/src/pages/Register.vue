@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import API from "../../api";
 
 export default {
   data() {
@@ -36,7 +36,7 @@ export default {
 },
     async register() {
       try {
-        await axios.post("http://127.0.0.1:5000/auth/register", {
+        await API.post("/auth/register", {
           name: this.name,
           email: this.email,
           password: this.password
