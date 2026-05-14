@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue"
-import axios from "axios"
-
+import API from "../../api"
 const appointments = ref([])
 
 const expandedId = ref(null)
@@ -13,8 +12,8 @@ today.setHours(0,0,0,0)
 // FETCH
 const fetchAppointments = async () => {
   try {
-    const res = await axios.get(
-      "http://127.0.0.1:5000/api/patient/appointments",
+    const res = await API.get(
+      "/api/patient/appointments",
       {
         headers: {
           "Authentication-Token": localStorage.getItem("token")
@@ -45,8 +44,8 @@ const fetchAppointments = async () => {
 // CANCEL
 const cancelAppointment = async (id) => {
   try {
-    await axios.patch(
-      `http://127.0.0.1:5000/api/patient/appointment/${id}/cancel`,
+    await API.patch(
+      `/api/patient/appointment/${id}/cancel`,
       {},
       {
         headers: {
@@ -74,8 +73,8 @@ const rescheduleAppointment = async (appt) => {
   selectedSlot.value = null
 
   try {
-    const res = await axios.get(
-      `http://127.0.0.1:5000/api/patient/doctor/${appt.doctor_id}/availability`,
+    const res = await API.get(
+      `/api/patient/doctor/${appt.doctor_id}/availability`,
       {
         headers: {
           "Authentication-Token": localStorage.getItem("token")
@@ -98,8 +97,8 @@ const submitReschedule = async (appt) => {
   }
 
   try {
-    await axios.put(
-      `http://127.0.0.1:5000/api/patient/appointment/${appt.appointment_id}/reschedule`,
+    await API.put(
+      `/api/patient/appointment/${appt.appointment_id}/reschedule`,
       {
         date: selectedSlot.value.date,
         time: selectedSlot.value.time
