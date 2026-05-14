@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue"
-import axios from "axios"
-
+import API from "../../api";
 
 const expandedPatientId = ref(null)
 const patientHistory = ref({})
@@ -10,7 +9,7 @@ const pastPatients = ref([])
 // Fetch all patients
 const fetchPatients = async () => {
   try {
-    const res = await axios.get("http://127.0.0.1:5000/api/doctor/patients", {
+    const res = await API.get("/api/doctor/patients", {
       headers: {
         "Authentication-Token": localStorage.getItem("token")
       }
@@ -27,8 +26,8 @@ const fetchPatients = async () => {
 // Fetch history of selected patient
 const fetchHistory = async (id) => {
   try {
-    const res = await axios.get(
-      `http://127.0.0.1:5000/api/doctor/patient/${id}/history`,
+    const res = await API.get(
+      `/api/doctor/patient/${id}/history`,
       {
         headers: {
           "Authentication-Token": localStorage.getItem("token")
