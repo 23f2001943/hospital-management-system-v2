@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from "vue"
-import axios from "axios"
-
+import API from "../../api"
 const patients = ref([])
 const search = ref("")
 const filterType = ref("name")
@@ -25,8 +24,8 @@ const blacklistedPatients = computed(() =>
 const fetchPatients = async () => {
   try {
 
-    const response = await axios.get(
-      "http://127.0.0.1:5000/api/admin/patients",
+    const response = await API.get(
+      "/api/admin/patients",
       {
         headers: {
           "Authentication-Token": token
@@ -53,8 +52,8 @@ const blacklistPatient = async (id) => {
 
   try {
 
-    await axios.patch(
-      `http://127.0.0.1:5000/api/admin/blacklist-patient/${id}`,
+    await API.patch(
+      `/api/admin/blacklist-patient/${id}`,
       {},
       {
         headers: {
@@ -81,8 +80,8 @@ const deletePatient = async (id) => {
 
   try {
 
-    await axios.delete(
-      `http://127.0.0.1:5000/api/admin/delete-patient/${id}`,
+    await API.delete(
+      `/api/admin/delete-patient/${id}`,
       {
         headers: {
           "Authentication-Token": token
