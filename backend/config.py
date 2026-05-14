@@ -13,8 +13,8 @@ class LocalDevelopmentConfig(BaseConfig):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///database.sqlite3"
     
-    CELERY_BROKER_URL = "redis://localhost:6379/0"
-    CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+    CELERY_BROKER_URL = os.environ.get("CACHE_REDIS_URL")
+    CELERY_RESULT_BACKEND = os.environ.get("CACHE_REDIS_URL")
 
     MAIL_SERVER = "localhost"
     MAIL_PORT = 1025
@@ -26,7 +26,7 @@ class LocalDevelopmentConfig(BaseConfig):
 
     CACHE_TYPE = "RedisCache"
     CACHE_DEFAULT_TIMEOUT = 300   # 5 minutes
-    CACHE_REDIS_URL = "redis://localhost:6379/0"
+    CACHE_REDIS_URL = os.environ.get("CACHE_REDIS_URL")
 
 
 class ProductionConfig(BaseConfig):
