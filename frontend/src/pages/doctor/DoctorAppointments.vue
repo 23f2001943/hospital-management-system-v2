@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue"
-import axios from "axios"
+import API from "../../api";
 
 const appointments = ref([])
 const expandedId = ref(null)
@@ -8,7 +8,7 @@ const treatmentForm = ref({})
 
 const fetchAppointments = async () => {
   try {
-    const res = await axios.get("http://127.0.0.1:5000/api/doctor/dashboard", {
+    const res = await API.get("/api/doctor/dashboard", {
       headers: {
         "Authentication-Token": localStorage.getItem("token")
       }
@@ -42,8 +42,8 @@ const toggleView = (id, appt) => {
 // cancel appointment
 const cancelAppointment = async (id) => {
   try {
-    await axios.patch(
-      `http://127.0.0.1:5000/api/doctor/appointment/${id}/status`,
+    await API.patch(
+      `/api/doctor/appointment/${id}/status`,
       { status: "Cancelled" },
       {
         headers: {
@@ -62,8 +62,8 @@ const cancelAppointment = async (id) => {
 // submit treatment
 const submitTreatment = async (id) => {
   try {
-    await axios.post(
-      `http://127.0.0.1:5000/api/doctor/appointment/${id}/treatment`,
+    await API.post(
+      `/api/doctor/appointment/${id}/treatment`,
       treatmentForm.value[id],
       {
         headers: {
