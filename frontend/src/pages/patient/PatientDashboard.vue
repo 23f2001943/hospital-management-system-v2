@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue"
-import axios from "axios"
+import API from "../../api"
 
 
 const taskId = ref(null)
@@ -31,8 +31,8 @@ const goToHistory = () => {
 // ================= FETCH PROFILE =================
 const fetchProfile = async () => {
   try {
-    const res = await axios.get(
-      "http://127.0.0.1:5000/api/patient/profile",
+    const res = await API.get(
+      "/api/patient/profile",
       {
         headers: {
           "Authentication-Token": localStorage.getItem("token")
@@ -49,8 +49,8 @@ const fetchProfile = async () => {
 
 const fetchCompletedAppointments = async () => {
   try {
-    const res = await axios.get(
-      "http://127.0.0.1:5000/api/patient/history/completed",
+    const res = await API.get(
+      "/api/patient/history/completed",
       {
         headers: {
           "Authentication-Token": localStorage.getItem("token")
@@ -78,8 +78,8 @@ const logout = () => {
 // ================= UPDATE PROFILE =================
 const updateProfile = async () => {
   try {
-    await axios.put(
-      "http://127.0.0.1:5000/api/patient/profile",
+    await API.put(
+      "/api/patient/profile",
       profile.value,
       {
         headers: {
@@ -100,8 +100,8 @@ const updateProfile = async () => {
 // EXPORT HISTORY
 const exportHistory = async () => {
   try {
-    const res = await axios.post(
-      "http://127.0.0.1:5000/api/patient/export-history",
+    const res = await API.post(
+      "/api/patient/export-history",
       {},
       {
         headers: {
@@ -124,8 +124,8 @@ const checkStatus = () => {
   const interval = setInterval(async () => {
 
     try {
-      const res = await axios.get(
-        `http://127.0.0.1:5000/api/patient/export-status/${taskId.value}`,
+      const res = await API.get(
+        `/api/patient/export-status/${taskId.value}`,
         {
           headers: {
             "Authentication-Token": localStorage.getItem("token")
@@ -150,8 +150,8 @@ const checkStatus = () => {
 
 const downloadFile = async () => {
   try {
-    const res = await axios.get(
-      `http://127.0.0.1:5000/api/patient/download-file?path=${filePath.value}`,
+    const res = await API.get(
+      `/api/patient/download-file?path=${filePath.value}`,
       {
         headers: {
           "Authentication-Token": localStorage.getItem("token")
